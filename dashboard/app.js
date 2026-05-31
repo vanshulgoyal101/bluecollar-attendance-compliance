@@ -80,12 +80,22 @@ function renderDashboard(empId) {
   trajectoryBody.innerHTML = '';
   data.history.forEach(item => {
     const tr = document.createElement('tr');
-    const ptsClass = item.points < 0 ? 'style="color: #ef4444;"' : '';
-    const pointsText = item.points < 0 ? `${item.points.toFixed(1)}` : `-${item.points.toFixed(1)}`;
+    
+    let pointsText = '0.0';
+    let ptsClass = '';
+    if (item.points < 0) {
+      pointsText = `${item.points.toFixed(1)}`;
+      ptsClass = 'style="color: #ef4444; font-weight: 600;"';
+    } else if (item.points > 0) {
+      pointsText = `+${item.points.toFixed(1)}`;
+      ptsClass = 'style="color: #10b981; font-weight: 600;"';
+    }
+    
     tr.innerHTML = `
       <td>${item.date}</td>
       <td><code>${item.code}</code></td>
-      <td ${ptsClass}>${item.points === 0 ? '0.0' : pointsText}</td>
+      <td ${ptsClass}>${pointsText}</td>
+      <td><strong>${item.balance.toFixed(1)}</strong></td>
       <td>${item.status}</td>
       <td>${item.roll_on || '--'}</td>
     `;

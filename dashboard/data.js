@@ -26,15 +26,18 @@ const employeeData = {
       { "date": "2025-09-01", "base": "SW (Scheduled Work)", "actual": "LTDR (Personal)", "status": "Exempted (FMLA)", "dto": false, "notes": "FMLA protected leave.", "supervisor_note": "Employee was out today due to FMLA-approved family medical leave.", "is_exempt": true }
     ],
     "history": [
-      { "date": "2025-02-15", "code": "Lo", "points": 0.0, "status": "Exempted", "details": "Freebie Lo (occurrence 1 of 3 in 12m)" },
-      { "date": "2025-03-10", "code": "Lo", "points": 0.0, "status": "Exempted", "details": "Freebie Lo (occurrence 2 of 3 in 12m)" },
-      { "date": "2025-04-12", "code": "Lo", "points": 0.0, "status": "Exempted", "details": "Freebie Lo (occurrence 3 of 3 in 12m)" },
-      { "date": "2025-05-18", "code": "Lo", "points": 0.0, "status": "Exempted", "details": "Supervisor Override: Vanshul car trouble - let slide" },
-      { "date": "2025-06-01", "code": "skp", "points": -1.0, "status": "Active Deduction", "details": "Unprotected sick period", "roll_on": "2026-06-01" },
-      { "date": "2025-06-02", "code": "skp", "points": 0.0, "status": "Exempted", "details": "Consecutive sick day under same skp period" },
-      { "date": "2025-07-20", "code": "LT", "points": -0.5, "status": "Active Deduction", "details": "Late >14 mins", "roll_on": "2026-07-20" },
-      { "date": "2025-08-15", "code": "IANS", "points": -3.0, "status": "Active Deduction", "details": "No call no show", "roll_on": "2026-08-15" },
-      { "date": "2025-09-01", "code": "LTDR", "points": 0.0, "status": "Exempted", "details": "FMLA Approved Medical Leave" }
+      { "date": "2025-02-15", "code": "Lo", "points": 0.0, "balance": 7.0, "status": "Exempted", "details": "Freebie Lo (occurrence 1 of 3 in 12m)" },
+      { "date": "2025-03-10", "code": "Lo", "points": 0.0, "balance": 7.0, "status": "Exempted", "details": "Freebie Lo (occurrence 2 of 3 in 12m)" },
+      { "date": "2025-04-12", "code": "Lo", "points": 0.0, "balance": 7.0, "status": "Exempted", "details": "Freebie Lo (occurrence 3 of 3 in 12m)" },
+      { "date": "2025-05-18", "code": "Lo", "points": 0.0, "balance": 7.0, "status": "Exempted", "details": "Supervisor Override" },
+      { "date": "2025-06-01", "code": "skp", "points": -1.0, "balance": 6.0, "status": "Active Deduction", "details": "Unprotected sick period", "roll_on": "2026-06-01" },
+      { "date": "2025-06-02", "code": "skp", "points": 0.0, "balance": 6.0, "status": "Exempted", "details": "Consecutive sick day" },
+      { "date": "2025-07-20", "code": "LT", "points": -0.5, "balance": 5.5, "status": "Active Deduction", "details": "Late >14 mins", "roll_on": "2026-07-20" },
+      { "date": "2025-08-15", "code": "IANS", "points": -3.0, "balance": 2.5, "status": "Active Deduction", "details": "No call no show", "roll_on": "2026-08-15" },
+      { "date": "2025-09-01", "code": "LTDR", "points": 0.0, "balance": 2.5, "status": "Exempted", "details": "FMLA Approved Leave" },
+      { "date": "2026-06-01", "code": "ROLL-ON", "points": 1.0, "balance": 3.5, "status": "Scheduled Roll-on", "details": "Recovery of 2025-06-01 skp deduction", "roll_on": "Completed" },
+      { "date": "2026-07-20", "code": "ROLL-ON", "points": 0.5, "balance": 4.0, "status": "Scheduled Roll-on", "details": "Recovery of 2025-07-20 LT deduction", "roll_on": "Completed" },
+      { "date": "2026-08-15", "code": "ROLL-ON", "points": 3.0, "balance": 7.0, "status": "Scheduled Roll-on", "details": "Recovery of 2025-08-15 IANS deduction", "roll_on": "Completed" }
     ],
     "warnings": []
   },
@@ -60,8 +63,10 @@ const employeeData = {
       { "date": "2025-08-20", "base": "DTO (Day Trade)", "actual": "SW (Present)", "dto": true, "trade_partner": "EMP101", "notes": "Worked shift swapped with EMP101." }
     ],
     "history": [
-      { "date": "2025-01-10", "code": "IANS", "points": -3.0, "status": "Active Deduction", "details": "No call no show", "roll_on": "2026-01-10" },
-      { "date": "2025-01-11", "code": "LTNC", "points": -2.0, "status": "Active Deduction", "details": "Late reported absence", "roll_on": "2026-01-11" }
+      { "date": "2025-01-10", "code": "IANS", "points": -3.0, "balance": 4.0, "status": "Active Deduction", "details": "No call no show", "roll_on": "2026-01-10" },
+      { "date": "2025-01-11", "code": "LTNC", "points": -2.0, "balance": 2.0, "status": "Active Deduction", "details": "Late reported absence", "roll_on": "2026-01-11" },
+      { "date": "2026-01-10", "code": "ROLL-ON", "points": 3.0, "balance": 5.0, "status": "Rolled-on (Expired)", "details": "Recovery of 2025-01-10 IANS deduction" },
+      { "date": "2026-01-11", "code": "ROLL-ON", "points": 2.0, "balance": 7.0, "status": "Rolled-on (Expired)", "details": "Recovery of 2025-01-11 LTNC deduction" }
     ],
     "warnings": [
       { "date": "2025-01-11", "level": "Written Warning (<= 2.0)", "points": 2.0 }
@@ -110,11 +115,11 @@ const employeeData = {
       { "date": "2025-03-01", "base": "SW (Scheduled Work)", "actual": "LTNC (Late Reported)", "status": "Point Deducted (-3.0)", "dto": false, "notes": "Late reported absence. Reached 1.0 threshold, freeze initiated.", "roll_on": "2026-03-01" }
     ],
     "history": [
-      { "date": "2025-01-05", "code": "Lo", "points": 0.0, "status": "Exempted", "details": "Freebie" },
-      { "date": "2025-01-12", "code": "Lo", "points": 0.0, "status": "Exempted", "details": "Freebie" },
-      { "date": "2025-01-20", "code": "Lo", "points": 0.0, "status": "Exempted", "details": "Freebie" },
-      { "date": "2025-02-15", "code": "IANS", "points": -3.0, "status": "Active Deduction", "details": "No call no show", "roll_on": "2026-02-15" },
-      { "date": "2025-03-01", "code": "IANS", "points": -3.0, "status": "Active Deduction", "details": "No call no show (Warning Triggered)", "roll_on": "2026-03-01" }
+      { "date": "2025-01-05", "code": "Lo", "points": 0.0, "balance": 7.0, "status": "Exempted", "details": "Freebie" },
+      { "date": "2025-01-12", "code": "Lo", "points": 0.0, "balance": 7.0, "status": "Exempted", "details": "Freebie" },
+      { "date": "2025-01-20", "code": "Lo", "points": 0.0, "balance": 7.0, "status": "Exempted", "details": "Freebie" },
+      { "date": "2025-02-15", "code": "IANS", "points": -3.0, "balance": 4.0, "status": "Active Deduction", "details": "No call no show", "roll_on": "2026-02-15" },
+      { "date": "2025-03-01", "code": "IANS", "points": -3.0, "balance": 1.0, "status": "Active Deduction", "details": "NCNS (Freeze Triggered)", "roll_on": "2026-03-01" }
     ],
     "warnings": [
       { "date": "2025-02-15", "level": "Written Warning (<= 2.0)", "points": 4.0 },
@@ -142,9 +147,9 @@ const employeeData = {
       { "date": "2025-04-10", "base": "SW (Scheduled Work)", "actual": "LTNC (Late Reported)", "status": "Point Deducted (-2.0)", "dto": false, "notes": "Late reported absence. Points reached 0.0, termination protocol active.", "roll_on": "2026-04-10" }
     ],
     "history": [
-      { "date": "2025-01-10", "code": "IANS", "points": -3.0, "status": "Active Deduction", "details": "No call no show", "roll_on": "2026-01-10" },
-      { "date": "2025-02-20", "code": "LTNC", "points": -2.0, "status": "Active Deduction", "details": "Late reported absence", "roll_on": "2026-02-20" },
-      { "date": "2025-04-10", "code": "LTNC", "points": -2.0, "status": "Active Deduction", "details": "Late reported absence", "roll_on": "2026-04-10" }
+      { "date": "2025-01-10", "code": "IANS", "points": -3.0, "balance": 4.0, "status": "Active Deduction", "details": "No call no show", "roll_on": "2026-01-10" },
+      { "date": "2025-02-20", "code": "LTNC", "points": -2.0, "balance": 2.0, "status": "Active Deduction", "details": "Late reported absence", "roll_on": "2026-02-20" },
+      { "date": "2025-04-10", "code": "LTNC", "points": -2.0, "balance": 0.0, "status": "Active Deduction", "details": "Late reported absence", "roll_on": "2026-04-10" }
     ],
     "warnings": [
       { "date": "2025-02-20", "level": "Written Warning (<= 2.0)", "points": 2.0 },
