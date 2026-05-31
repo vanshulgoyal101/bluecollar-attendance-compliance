@@ -257,6 +257,23 @@ function showLetter(type) {
     level = 'Termination Memo (<= 0.0)';
   }
 
+  // Calculate dynamic current points
+  const todayVal = new Date("2026-05-31");
+  let currentPoints = data.starting_points;
+  const historicalEvents = data.history.filter(item => new Date(item.date) <= todayVal);
+  if (historicalEvents.length > 0) {
+    currentPoints = historicalEvents[historicalEvents.length - 1].balance;
+  }
+
+  // Get active infractions contributing to the points drop
+  const activeInfractions = data.history.filter(h => h.points < 0);
+  let infractionsList = "";
+  if (activeInfractions.length > 0) {
+    infractionsList = activeInfractions.map(d => `* Date: ${d.date} | Code: [${d.code}] | Impact: ${d.points.toFixed(1)} pts (${d.details})`).join("\n");
+  } else {
+    infractionsList = "* No active infractions recorded.";
+  }
+
   const todayStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   preview.innerHTML = `
@@ -271,8 +288,12 @@ This official document serves as a compliance notice regarding your point balanc
 
 <strong>Status Summary:</strong>
 - Starting point balance: ${data.starting_points.toFixed(1)} Points
-- Current compliance score: ${data.current_points.toFixed(1)} Points
+- Current compliance score: <strong>${currentPoints.toFixed(1)} Points</strong>
 - Current Policy Tier status: <strong>[${level}]</strong>
+
+<strong>Deduction Trail:</strong>
+The following infractions led to your current point level of ${currentPoints.toFixed(1)} points:
+${infractionsList}
 
 <strong>Important Notice:</strong>
 - Scores below 2.0 trigger a Written Warning.
