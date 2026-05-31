@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workforce Attendance Compliance Hub</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="logo-section">
+        <h1>Compliance & Operations Hub</h1>
+        <p>AI-Native Workforce Attendance & Compliance Layer</p>
+      </div>
+      <div class="controls">
+        <label for="employee-select" style="color: var(--text-secondary); font-size: 0.9rem;">Selected Employee:</label>
+        <select id="employee-select">
+          <option value="EMP101">EMP101 - Vanshul Goyal</option>
+          <option value="EMP102">EMP102 - Sarah Connor</option>
+          <option value="EMP103">EMP103 - Marcus Wright</option>
+          <option value="EMP104">EMP104 - John Connor</option>
+          <option value="EMP105">EMP105 - Kyle Reese</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('compliance')">Compliance & Escalations</button>
+      <button class="tab-btn" onclick="switchTab('operations')">Operational Shift & Schedules</button>
+    </div>
+
+    <!-- 1. COMPLIANCE DASHBOARD -->
+    <div id="compliance-panel" class="dashboard-panel active">
+      <!-- Metric Grid -->
+      <div class="grid-3">
+        <div class="card stat-card">
+          <span class="stat-label">Compliance Balance</span>
+          <div class="stat-value" id="points-val">7.0</div>
+          <span id="warning-badge" class="badge badge-success">Good Standing</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">Freebies Used (Rolling 12m)</span>
+          <div class="stat-value" id="freebies-val">0</div>
+          <span class="stat-label" style="font-size: 0.8rem;">Limit: 3 Freebies</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">Active Freeze Status</span>
+          <div class="stat-value" id="freeze-val">No</div>
+          <span class="stat-label" id="freeze-sublabel" style="font-size: 0.8rem;">No active roll-on freezes</span>
+        </div>
+      </div>
+
+      <!-- Detail Grid -->
+      <div class="grid-2-1">
+        <!-- Chronological Timeline -->
+        <div class="card">
+          <h3>Points & Expirations Trajectory</h3>
+          <table id="trajectory-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Code</th>
+                <th>Points Impact</th>
+                <th>Status</th>
+                <th>Roll-on Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- FMLA & Exceptions Info -->
+        <div class="card">
+          <h3>Exemptions & Regulatory Compliance</h3>
+          <div style="margin-bottom: 1.5rem;">
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+              FMLA Protected Absences: <strong id="fmla-count" style="color:#fff;">0</strong>
+            </p>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+              Supervisor Excused Points: <strong id="excused-count" style="color:#fff;">0</strong>
+            </p>
+          </div>
+          <h3>Exemption Log</h3>
+          <div id="exemptions-log" style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.8rem;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Action & Letters Hub -->
+      <div class="grid-3" style="grid-template-columns: 1fr 2fr;">
+        <div class="card">
+          <h3>Compliance Action Hub</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+            Generate official warning notifications or termination memos when employee compliance scores trigger thresholds.
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+            <button class="tab-btn" style="width: 100%; text-align: left;" onclick="showLetter('written')">Generate Written Warning</button>
+            <button class="tab-btn" style="width: 100%; text-align: left;" onclick="showLetter('termination-warning')">Generate Termination Warning</button>
+            <button class="tab-btn" style="width: 100%; text-align: left;" onclick="showLetter('termination')">Generate Termination Memo</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Escalation & Warning Notice Preview</h3>
+          <div class="letter-box" id="letter-preview">
+Select an option from the Compliance Action Hub to generate and view the warning memo.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. OPERATIONS DASHBOARD -->
+    <div id="operations-panel" class="dashboard-panel">
+      <!-- Top Metrics Grid -->
+      <div class="grid-3">
+        <div class="card stat-card">
+          <span class="stat-label">Protected Sick Leave Balance</span>
+          <div class="stat-value" id="sick-bal-val">32 hrs</div>
+          <span class="stat-label" style="font-size: 0.8rem;">Allocated: 40 hrs / year</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">Vacation Balance</span>
+          <div class="stat-value" id="vacation-val">80 hrs</div>
+          <span class="stat-label" style="font-size: 0.8rem;">Earned & unused</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">Department / Role</span>
+          <div class="stat-value" id="role-val" style="font-size: 1.5rem; padding: 1.2rem 0;">Warehouse Ops</div>
+          <span class="stat-label" id="dept-val">Logistics</span>
+        </div>
+      </div>
+
+      <!-- Schedule & Notes Detail Grid -->
+      <div class="grid-2-1">
+        <!-- Daily Schedule Grid -->
+        <div class="card">
+          <h3>Daily Base Schedule & Actual Punches</h3>
+          <table id="schedule-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Base Schedule</th>
+                <th>Actual Punch Result</th>
+                <th>Status / Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Shift Notes & Trades -->
+        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+          <div class="card">
+            <h3>Supervisor Notes</h3>
+            <div id="supervisor-notes-log" style="display:flex; flex-direction:column; gap:1rem;">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+          <div class="card">
+            <h3>Day Trade Off (DTO) Swaps</h3>
+            <div id="dto-log">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

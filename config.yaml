@@ -1,0 +1,19 @@
+policy:
+  start_points: 7.0
+  roll_off_months: 12
+  freeze:
+    trigger_points: 1.0
+    duration_months: 4
+  warnings:
+    written: 2.0
+    termination_warning: 1.0
+    termination: 0.0
+  infractions:
+    skps: 0.0
+    skp: 1.0
+    LTDR: 1.0
+    IANS: 3.0
+    LTNC: 2.0
+    LT: 0.5
+    Lo: 0.5
+  lo_freebies: 3
