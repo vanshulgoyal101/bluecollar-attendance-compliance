@@ -47,14 +47,26 @@ function renderDashboard(empId) {
 
   // 2. Compliance Metrics
   document.getElementById('points-val').innerText = currentPoints.toFixed(1);
-  document.getElementById('freebies-val').innerText = data.freebies_used;
   
-  // Render freebie date links
-  const freebieDates = data.history.filter(item => item.code === 'Lo' && item.points === 0 && (item.details.includes('Freebie') || item.details.includes('Lo')));
+  // Calculate dynamic freebies in rolling 12m (from 12 months before today up to today)
+  const lookbackDate = new Date(todayVal);
+  lookbackDate.setFullYear(todayVal.getFullYear() - 1);
+  
+  const rollingFreebies = data.history.filter(item => {
+    const itemDate = new Date(item.date);
+    return item.code === 'Lo' && 
+           item.points === 0 && 
+           itemDate >= lookbackDate && 
+           itemDate <= todayVal;
+  });
+  
+  document.getElementById('freebies-val').innerText = rollingFreebies.length;
+  
+  // Render freebie date links for rolling 12m only
   const freebieDatesContainer = document.getElementById('freebie-dates');
   freebieDatesContainer.innerHTML = '';
-  if (freebieDates.length > 0) {
-    freebieDates.forEach((ev, idx) => {
+  if (rollingFreebies.length > 0) {
+    rollingFreebies.forEach((ev, idx) => {
       const a = document.createElement('a');
       a.href = `#row-${ev.date}`;
       a.style.color = '#1d4ed8';
@@ -67,7 +79,7 @@ function renderDashboard(empId) {
         scrollToRow(`row-${ev.date}`);
       };
       freebieDatesContainer.appendChild(a);
-      if (idx < freebieDates.length - 1) {
+      if (idx < rollingFreebies.length - 1) {
         const span = document.createElement('span');
         span.innerText = '|';
         span.style.color = 'var(--text-muted)';
@@ -75,7 +87,7 @@ function renderDashboard(empId) {
       }
     });
   } else {
-    freebieDatesContainer.innerHTML = '<span style="color: var(--text-muted);">None used</span>';
+    freebieDatesContainer.innerHTML = '<span style="color: var(--text-muted);">None in rolling 12m</span>';
   }
   
   // Status Badge
