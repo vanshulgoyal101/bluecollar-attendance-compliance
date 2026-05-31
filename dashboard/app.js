@@ -28,24 +28,34 @@ function renderDashboard(empId) {
   const data = employeeData[empId];
   if (!data) return;
 
+  // Compute points dynamically from the history log on or before today (2026-05-31)
+  const todayVal = new Date("2026-05-31");
+  let currentPoints = data.starting_points;
+  
+  // Filter history to include only events on or before today
+  const historicalEvents = data.history.filter(item => new Date(item.date) <= todayVal);
+  if (historicalEvents.length > 0) {
+    currentPoints = historicalEvents[historicalEvents.length - 1].balance;
+  }
+
   // 1. Header Information & Roles
   document.getElementById('role-val').innerText = data.role.split(' ')[0] + ' ' + (data.role.split(' ')[1] || 'Staff');
   document.getElementById('dept-val').innerText = data.department;
 
   // 2. Compliance Metrics
-  document.getElementById('points-val').innerText = data.current_points.toFixed(1);
+  document.getElementById('points-val').innerText = currentPoints.toFixed(1);
   document.getElementById('freebies-val').innerText = data.freebies_used;
   
   // Status Badge
   const badge = document.getElementById('warning-badge');
   badge.className = 'badge';
-  if (data.current_points <= 0.0) {
+  if (currentPoints <= 0.0) {
     badge.innerText = 'TERMINATION TRIGGERED';
     badge.classList.add('badge-danger');
-  } else if (data.current_points <= 1.0) {
+  } else if (currentPoints <= 1.0) {
     badge.innerText = 'TERMINATION WARNING';
     badge.classList.add('badge-danger');
-  } else if (data.current_points <= 2.0) {
+  } else if (currentPoints <= 2.0) {
     badge.innerText = 'WRITTEN WARNING ACTIVE';
     badge.classList.add('badge-warning');
   } else {
