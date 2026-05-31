@@ -46,6 +46,35 @@ function renderDashboard(empId) {
   document.getElementById('points-val').innerText = currentPoints.toFixed(1);
   document.getElementById('freebies-val').innerText = data.freebies_used;
   
+  // Render freebie date links
+  const freebieDates = data.history.filter(item => item.code === 'Lo' && item.points === 0 && (item.details.includes('Freebie') || item.details.includes('Lo')));
+  const freebieDatesContainer = document.getElementById('freebie-dates');
+  freebieDatesContainer.innerHTML = '';
+  if (freebieDates.length > 0) {
+    freebieDates.forEach((ev, idx) => {
+      const a = document.createElement('a');
+      a.href = `#row-${ev.date}`;
+      a.style.color = '#1d4ed8';
+      a.style.textDecoration = 'underline';
+      a.style.cursor = 'pointer';
+      a.style.fontWeight = '500';
+      a.innerText = ev.date;
+      a.onclick = (e) => {
+        e.preventDefault();
+        scrollToRow(`row-${ev.date}`);
+      };
+      freebieDatesContainer.appendChild(a);
+      if (idx < freebieDates.length - 1) {
+        const span = document.createElement('span');
+        span.innerText = '|';
+        span.style.color = 'var(--text-muted)';
+        freebieDatesContainer.appendChild(span);
+      }
+    });
+  } else {
+    freebieDatesContainer.innerHTML = '<span style="color: var(--text-muted);">None used</span>';
+  }
+  
   // Status Badge
   const badge = document.getElementById('warning-badge');
   badge.className = 'badge';
@@ -90,6 +119,7 @@ function renderDashboard(empId) {
   trajectoryBody.innerHTML = '';
   [...data.history].reverse().forEach(item => {
     const tr = document.createElement('tr');
+    tr.id = `row-${item.date}`;
     
     let pointsText = '0.0';
     let ptsClass = '';
@@ -101,12 +131,17 @@ function renderDashboard(empId) {
       ptsClass = 'style="color: #10b981; font-weight: 600;"';
     }
     
+    let statusHtml = item.status;
+    if (item.status === 'Exempted' || item.points === 0) {
+      statusHtml = `<span style="cursor: pointer; text-decoration: underline; color: #1d4ed8;" onclick="showExemptionModal('${empId}', '${item.date}')">${item.status} 🔍</span>`;
+    }
+    
     tr.innerHTML = `
       <td>${item.date}</td>
       <td><code>${item.code}</code></td>
       <td ${ptsClass}>${pointsText}</td>
       <td><strong>${item.balance.toFixed(1)}</strong></td>
-      <td>${item.status}</td>
+      <td>${statusHtml}</td>
       <td>${item.roll_on || '--'}</td>
     `;
     trajectoryBody.appendChild(tr);
@@ -253,6 +288,62 @@ document.getElementById('employee-select').addEventListener('change', (e) => {
   currentEmployeeId = e.target.value;
   renderDashboard(currentEmployeeId);
 });
+
+function scrollToRow(id) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Flash highlight style
+    element.style.transition = 'background-color 0.3s ease';
+    element.style.backgroundColor = '#dbeafe'; // Light blue highlight
+    setTimeout(() => {
+      element.style.backgroundColor = '';
+    }, 1500);
+  }
+}
+
+function showExemptionModal(empId, date) {
+  const data = employeeData[empId];
+  if (!data) return;
+
+  const record = data.history.find(h => h.date === date);
+  const scheduleItem = data.schedule.find(s => s.date === date);
+  if (!record) return;
+
+  const modal = document.getElementById('exemption-modal');
+  const modalContent = document.getElementById('modal-content');
+
+  const supNote = (scheduleItem && scheduleItem.supervisor_note) ? scheduleItem.supervisor_note : "No supervisor notes recorded for this date.";
+
+  modalContent.innerHTML = `
+    <div style="margin-bottom: 1rem;">
+      <strong>Date:</strong> ${record.date}<br>
+      <strong>Infraction Code:</strong> <code>${record.code}</code><br>
+      <strong>Points Deducted:</strong> ${record.points.toFixed(1)}<br>
+      <strong>Reason/Details:</strong> ${record.details}<br>
+    </div>
+    <div style="border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1rem; margin-top: 1rem;">
+      <strong>Supervisor Notes:</strong>
+      <p style="font-style: italic; background: #f8fafc; padding: 0.8rem; border-radius: 8px; margin-top: 0.5rem; border-left: 3px solid #3b82f6; color: var(--text-primary);">
+        "${supNote}"
+      </p>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('exemption-modal').style.display = 'none';
+}
+
+// Close modal when clicking outside of the modal card
+window.onclick = function(event) {
+  const modal = document.getElementById('exemption-modal');
+  if (event.target === modal) {
+    closeModal();
+  }
+};
 
 // Init
 window.onload = () => {

@@ -44,12 +44,28 @@
         <div class="card stat-card">
           <span class="stat-label">Freebies Used (Rolling 12m)</span>
           <div class="stat-value" id="freebies-val">0</div>
-          <span class="stat-label" style="font-size: 0.8rem;">Limit: 3 Freebies</span>
+          <div id="freebie-dates" style="font-size: 0.75rem; margin-top: 0.3rem; display: flex; gap: 0.4rem; justify-content: center; flex-wrap: wrap;">
+            <!-- Clickable dates links here -->
+          </div>
+          <span class="stat-label" style="font-size: 0.8rem; margin-top: 0.5rem;">Limit: 3 Freebies</span>
         </div>
         <div class="card stat-card">
           <span class="stat-label">Active Freeze Status</span>
           <div class="stat-value" id="freeze-val">No</div>
           <span class="stat-label" id="freeze-sublabel" style="font-size: 0.8rem;">No active roll-on freezes</span>
+        </div>
+      </div>
+
+      <!-- Exemption Modal Overlay -->
+      <div id="exemption-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3 style="margin: 0; border: none; padding: 0;">Exemption Details</h3>
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+          </div>
+          <div class="modal-body" id="modal-content" style="color: var(--text-secondary); line-height: 1.5; font-size: 0.95rem;">
+            <!-- Populated dynamically -->
+          </div>
         </div>
       </div>
 
