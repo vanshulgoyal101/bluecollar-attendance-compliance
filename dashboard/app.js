@@ -88,7 +88,7 @@ function renderDashboard(empId) {
   // 3. Trajectory Table
   const trajectoryBody = document.querySelector('#trajectory-table tbody');
   trajectoryBody.innerHTML = '';
-  data.history.forEach(item => {
+  [...data.history].reverse().forEach(item => {
     const tr = document.createElement('tr');
     
     let pointsText = '0.0';
@@ -115,7 +115,7 @@ function renderDashboard(empId) {
   // 4. Exemption & FMLA Explorer
   const exemptionLog = document.getElementById('exemptions-log');
   exemptionLog.innerHTML = '';
-  const exemptions = data.schedule.filter(s => s.status.includes('Exempt') || s.status.includes('Excused'));
+  const exemptions = [...data.schedule].reverse().filter(s => s.status.includes('Exempt') || s.status.includes('Excused'));
   if (exemptions.length === 0) {
     exemptionLog.innerHTML = '<p style="color: var(--text-muted);">No exceptions logged.</p>';
   } else {
@@ -140,7 +140,7 @@ function renderDashboard(empId) {
   // 5. Operations: Schedule Table
   const scheduleBody = document.querySelector('#schedule-table tbody');
   scheduleBody.innerHTML = '';
-  data.schedule.forEach(item => {
+  [...data.schedule].reverse().forEach(item => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${item.date}</td>
