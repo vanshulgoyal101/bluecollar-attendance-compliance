@@ -28,6 +28,9 @@ function renderDashboard(empId) {
   const data = employeeData[empId];
   if (!data) return;
 
+  // Render joining date dynamically
+  document.getElementById('join-date-badge').innerText = `Joined: ${data.join_date || '--'}`;
+
   // Compute points dynamically from the history log on or before today (2026-05-31)
   const todayVal = new Date("2026-05-31");
   let currentPoints = data.starting_points;
