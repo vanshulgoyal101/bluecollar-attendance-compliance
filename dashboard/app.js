@@ -1,5 +1,15 @@
 let currentEmployeeId = "EMP101";
 
+// Escape untrusted string values before interpolating into innerHTML (prevents XSS).
+function esc(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function switchTab(tabName) {
   // Update buttons
   const buttons = document.querySelectorAll('.tab-btn');
@@ -146,18 +156,18 @@ function renderDashboard(empId) {
       ptsClass = 'style="color: #10b981; font-weight: 600;"';
     }
     
-    let statusHtml = item.status;
+    let statusHtml = esc(item.status);
     if (item.status === 'Exempted' || item.points === 0) {
-      statusHtml = `<span style="cursor: pointer; text-decoration: underline; color: #1d4ed8;" onclick="showExemptionModal('${empId}', '${item.date}')">${item.status} 🔍</span>`;
+      statusHtml = `<span style="cursor: pointer; text-decoration: underline; color: #1d4ed8;" onclick="showExemptionModal('${empId}', '${item.date}')">${esc(item.status)} 🔍</span>`;
     }
     
     tr.innerHTML = `
-      <td>${item.date}</td>
-      <td><code>${item.code}</code></td>
+      <td>${esc(item.date)}</td>
+      <td><code>${esc(item.code)}</code></td>
       <td ${ptsClass}>${pointsText}</td>
       <td><strong>${item.balance.toFixed(1)}</strong></td>
       <td>${statusHtml}</td>
-      <td>${item.roll_on || '--'}</td>
+      <td>${item.roll_on ? esc(item.roll_on) : '--'}</td>
     `;
     trajectoryBody.appendChild(tr);
   });
@@ -177,11 +187,11 @@ function renderDashboard(empId) {
       div.style.borderLeft = '3px solid #a855f7';
       div.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:0.2rem;">
-          <strong style="font-size:0.85rem;">${ex.date} - ${ex.actual}</strong>
-          <span style="font-size:0.75rem; color:#10b981;">${ex.status}</span>
+          <strong style="font-size:0.85rem;">${esc(ex.date)} - ${esc(ex.actual)}</strong>
+          <span style="font-size:0.75rem; color:#10b981;">${esc(ex.status)}</span>
         </div>
-        <p style="color:var(--text-secondary); font-size:0.8rem; line-height:1.2;">${ex.notes}</p>
-        ${ex.supervisor_note ? `<p style="color:var(--text-muted); font-size:0.75rem; margin-top:0.3rem; font-style:italic;">Note: "${ex.supervisor_note}"</p>` : ''}
+        <p style="color:var(--text-secondary); font-size:0.8rem; line-height:1.2;">${esc(ex.notes)}</p>
+        ${ex.supervisor_note ? `<p style="color:var(--text-muted); font-size:0.75rem; margin-top:0.3rem; font-style:italic;">Note: "${esc(ex.supervisor_note)}"</p>` : ''}
       `;
       exemptionLog.appendChild(div);
     });
@@ -193,10 +203,10 @@ function renderDashboard(empId) {
   [...data.schedule].reverse().forEach(item => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${item.date}</td>
-      <td>${item.base}</td>
-      <td><strong>${item.actual}</strong></td>
-      <td>${item.notes || '--'}</td>
+      <td>${esc(item.date)}</td>
+      <td>${esc(item.base)}</td>
+      <td><strong>${esc(item.actual)}</strong></td>
+      <td>${item.notes ? esc(item.notes) : '--'}</td>
     `;
     scheduleBody.appendChild(tr);
   });
@@ -219,10 +229,10 @@ function renderDashboard(empId) {
       div.style.borderRadius = '8px';
       div.innerHTML = `
         <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.3rem;">
-          <span style="color:var(--text-secondary);">${n.date}</span>
-          <span style="color:var(--text-muted);">Code: ${n.actual}</span>
+          <span style="color:var(--text-secondary);">${esc(n.date)}</span>
+          <span style="color:var(--text-muted);">Code: ${esc(n.actual)}</span>
         </div>
-        <p style="font-size:0.85rem; font-style:italic;">"${n.supervisor_note}"</p>
+        <p style="font-size:0.85rem; font-style:italic;">"${esc(n.supervisor_note)}"</p>
       `;
       supervisorLog.appendChild(div);
     });
@@ -242,9 +252,9 @@ function renderDashboard(empId) {
       div.style.borderRadius = '8px';
       div.innerHTML = `
         <div style="font-size:0.85rem;">
-          📅 <strong>${t.date}</strong> - Traded with <strong>${t.trade_partner}</strong>
+          📅 <strong>${esc(t.date)}</strong> - Traded with <strong>${esc(t.trade_partner)}</strong>
         </div>
-        <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:0.2rem;">${t.notes}</p>
+        <p style="color:var(--text-secondary); font-size:0.8rem; margin-top:0.2rem;">${esc(t.notes)}</p>
       `;
       dtoLog.appendChild(div);
     });
@@ -281,7 +291,7 @@ function showLetter(type) {
   const activeInfractions = data.history.filter(h => h.points < 0);
   let infractionsList = "";
   if (activeInfractions.length > 0) {
-    infractionsList = activeInfractions.map(d => `* Date: ${d.date} | Code: [${d.code}] | Impact: ${d.points.toFixed(1)} pts (${d.details})`).join("\n");
+    infractionsList = activeInfractions.map(d => `* Date: ${esc(d.date)} | Code: [${esc(d.code)}] | Impact: ${d.points.toFixed(1)} pts (${esc(d.details)})`).join("\n");
   } else {
     infractionsList = "* No active infractions recorded.";
   }
@@ -292,7 +302,7 @@ function showLetter(type) {
 <strong>OFFICIAL COMPLIANCE NOTICE</strong>
 --------------------------------------------------
 <strong>Date:</strong> ${todayStr}
-<strong>To:</strong> Employee ID: ${currentEmployeeId} (${data.name})
+<strong>To:</strong> Employee ID: ${esc(currentEmployeeId)} (${esc(data.name)})
 <strong>From:</strong> Workforce Compliance Department
 <strong>Subject:</strong> ATTENDANCE COMPLIANCE ACTION NOTICE - ${level.toUpperCase()}
 
@@ -353,15 +363,15 @@ function showExemptionModal(empId, date) {
 
   modalContent.innerHTML = `
     <div style="margin-bottom: 1rem;">
-      <strong>Date:</strong> ${record.date}<br>
-      <strong>Infraction Code:</strong> <code>${record.code}</code><br>
+      <strong>Date:</strong> ${esc(record.date)}<br>
+      <strong>Infraction Code:</strong> <code>${esc(record.code)}</code><br>
       <strong>Points Deducted:</strong> ${record.points.toFixed(1)}<br>
-      <strong>Reason/Details:</strong> ${record.details}<br>
+      <strong>Reason/Details:</strong> ${esc(record.details)}<br>
     </div>
     <div style="border-top: 1px solid rgba(0,0,0,0.1); padding-top: 1rem; margin-top: 1rem;">
       <strong>Supervisor Notes:</strong>
       <p style="font-style: italic; background: #f8fafc; padding: 0.8rem; border-radius: 8px; margin-top: 0.5rem; border-left: 3px solid #3b82f6; color: var(--text-primary);">
-        "${supNote}"
+        "${esc(supNote)}"
       </p>
     </div>
   `;
