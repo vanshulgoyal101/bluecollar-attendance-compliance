@@ -3,7 +3,6 @@ import json
 import logging
 from typing import Dict, Any
 from pydantic import BaseModel, Field
-import litellm
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +69,9 @@ Return a JSON object conforming exactly to this structure:
 }}
 """
         try:
+            # Imported lazily so the mock/offline path works without litellm installed.
+            import litellm
+
             response = litellm.completion(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],

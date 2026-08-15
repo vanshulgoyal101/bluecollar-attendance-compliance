@@ -84,10 +84,24 @@ This generates:
 * **Warning / Termination Notices** in `reports/Warning_Letter_EMPxxx.md`.
 
 ### 3. Run the Unit Test Suite
-We have implemented strict test coverages to verify freeze periods, rolling freebie resets, consecutive sick grouping, and basic deductions:
+The suite verifies the deterministic compliance engine and its supporting modules
+without requiring network access or an LLM API key:
+
+* **Engine** — basic deductions, consecutive sick (skp) grouping, rolling `Lo`
+  freebies, freeze periods and 12-month roll-ons, supervisor-note exemptions (via
+  an injected LLM stub), the points floor at zero, and warning thresholds.
+* **LLM client** — the offline mock-fallback branches (FMLA, supervisor override,
+  protected sick, and non-exempt notes) used when no API key is configured.
+* **Parser** — CSV punch-log and JSON supervisor-note ingestion, type
+  normalization, and validation errors.
+
 ```bash
-python3 -m pytest tests/
+python3 -m pytest
 ```
+
+> The `litellm` dependency is imported lazily, so the full suite runs even if it
+> is not installed; it is only required for live LLM analysis.
+
 
 ### 4. Run the Interactive Dashboard Locally
 To view the front-end dashboard, spin up a lightweight server from the `dashboard` directory:

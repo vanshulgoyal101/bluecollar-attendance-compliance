@@ -3,6 +3,23 @@ import pandas as pd
 import datetime
 from src.config import PolicyConfig
 from src.engine import ComplianceEngine
+from src.llm_client import ExceptionAnalysis
+
+
+class FakeLLMClient:
+    """Deterministic LLM stub for engine tests."""
+
+    def __init__(self, exempt: bool, exception_type: str = "FMLA"):
+        self._exempt = exempt
+        self._type = exception_type
+
+    def analyze_note(self, note_text: str, infraction_type: str) -> ExceptionAnalysis:
+        return ExceptionAnalysis(
+            is_exempt=self._exempt,
+            reason="stubbed",
+            exception_type=self._type if self._exempt else "None",
+        )
+
 
 @pytest.fixture
 def policy_config():
@@ -81,3 +98,59 @@ def test_freeze_period_and_roll_on(engine):
     results_after_freeze = engine.process_employee_compliance("EMP04", punches, [])
     # 2025-01-01 infraction has rolled on (+3.0) -> 1.0 + 3.0 = 4.0
     assert results_after_freeze["current_points"] == 4.0
+
+
+def test_empty_employee_starts_with_full_points(engine, policy_config):
+    empty = pd.DataFrame(columns=["employee_id", "date", "base_code", "actual_code"])
+    result = engine.process_employee_compliance("GHOST", empty, [])
+    assert result["current_points"] == policy_config.start_points
+    assert result["history"] == []
+
+
+def test_supervisor_note_exempts_infraction(policy_config):
+    engine = ComplianceEngine(config=policy_config, llm_client=FakeLLMClient(exempt=True))
+    punches = pd.DataFrame([
+        {"employee_id": "EMP10", "date": datetime.date(2025, 1, 1), "base_code": "SW", "actual_code": "IANS"},
+    ])
+    notes = [{"employee_id": "EMP10", "date": datetime.date(2025, 1, 1), "note": "On FMLA leave"}]
+
+    result = engine.process_employee_compliance("EMP10", punches, notes)
+    # Exempt -> no deduction, points remain full.
+    assert result["current_points"] == policy_config.start_points
+    assert result["history"][0]["points_deducted"] == 0.0
+    assert result["history"][0]["is_exempted"] is True
+
+
+def test_non_exempt_note_still_deducts(policy_config):
+    engine = ComplianceEngine(config=policy_config, llm_client=FakeLLMClient(exempt=False))
+    punches = pd.DataFrame([
+        {"employee_id": "EMP11", "date": datetime.date(2025, 1, 1), "base_code": "SW", "actual_code": "IANS"},
+    ])
+    notes = [{"employee_id": "EMP11", "date": datetime.date(2025, 1, 1), "note": "No valid reason"}]
+
+    result = engine.process_employee_compliance("EMP11", punches, notes)
+    assert result["current_points"] == policy_config.start_points - 3.0
+
+
+def test_points_never_go_below_zero(policy_config):
+    engine = ComplianceEngine(config=policy_config, llm_client=FakeLLMClient(exempt=False))
+    # Many severe infractions on consecutive days should floor at 0, not go negative.
+    rows = [
+        {"employee_id": "EMP12", "date": datetime.date(2025, 1, d), "base_code": "SW", "actual_code": "IANS"}
+        for d in range(1, 6)
+    ]
+    result = engine.process_employee_compliance("EMP12", pd.DataFrame(rows), [])
+    assert result["current_points"] == 0.0
+    assert result["current_points"] >= 0.0
+
+
+def test_warning_thresholds_are_recorded(engine):
+    punches = pd.DataFrame([
+        {"employee_id": "EMP13", "date": datetime.date(2025, 1, 1), "base_code": "SW", "actual_code": "IANS"},  # 7->4
+        {"employee_id": "EMP13", "date": datetime.date(2025, 1, 2), "base_code": "SW", "actual_code": "IANS"},  # 4->1
+    ])
+    result = engine.process_employee_compliance("EMP13", punches, [])
+    assert len(result["warnings"]) >= 1
+    # Dropping to 1.0 should trigger a freeze period.
+    assert len(result["freeze_periods"]) >= 1
+
