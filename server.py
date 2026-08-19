@@ -13,6 +13,7 @@ generator are consumed through their stable contracts (see
 - GET  /api/employees/<id>   -> a single employee (live record via ComplianceService)
 - GET  /api/health           -> configured LLM providers + auth status (public)
 - GET  /api/usage            -> LLM usage snapshot (contract 3.4)
+- GET  /api/analytics        -> department / at-risk / points-distribution stats (F-45)
 - POST /api/chat             -> {question, history?} -> grounded answer
 - POST /api/chat/stream      -> Server-Sent Events stream of the answer (contract 3.3)
 - POST /api/export/irm       -> {employee_id} -> downloadable IRM brief (Markdown)
@@ -69,6 +70,17 @@ MAX_HISTORY_TURNS = 12
 STREAM_CHUNK_SIZE = 60
 EMP_ID_RE = re.compile(r"^EMP\d{2,6}$")
 
+# Points-distribution buckets for /api/analytics, evaluated top-down (first match
+# wins) so they mirror the dashboard's Analytics view exactly.
+POINT_BUCKETS = (
+    ("<=0 (Termination)", lambda p: p <= 0),
+    ("0-1 (Termination Warning)", lambda p: p <= 1),
+    ("1-2 (Written Warning)", lambda p: p <= 2),
+    ("2-4", lambda p: p <= 4),
+    ("4-6", lambda p: p <= 6),
+    ("6-7 (Good Standing)", lambda p: True),
+)
+
 # Endpoints reachable without a session (login flow + liveness probe).
 PUBLIC_PATHS = frozenset({"/login", "/api/login", "/api/health", "/favicon.ico"})
 
@@ -122,6 +134,66 @@ def _results_from_record(emp: Dict[str, Any]) -> Dict[str, Any]:
         "history": history,
         "warnings": emp.get("warnings") or [],
         "freeze_periods": freeze_periods,
+    }
+
+
+def _analytics_from_records(records: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    """Aggregate department, at-risk and points-distribution stats (F-45).
+
+    Computed server-side from the canonical records so the figures match the
+    dashboard and are available programmatically. ``at_risk`` is <= 2.0 points.
+    """
+    rows: List[Dict[str, Any]] = []
+    for emp_id, emp in (records or {}).items():
+        pts = emp.get("current_points")
+        rows.append(
+            {
+                "id": emp_id,
+                "name": emp.get("name", ""),
+                "department": emp.get("department") or "Unassigned",
+                "warning_status": emp.get("warning_status", ""),
+                "current_points": float(pts) if pts is not None else 7.0,
+            }
+        )
+
+    total = len(rows)
+    at_risk = sorted(
+        (r for r in rows if r["current_points"] <= 2.0),
+        key=lambda r: r["current_points"],
+    )
+    avg = round(sum(r["current_points"] for r in rows) / total, 2) if total else 0.0
+
+    dept: Dict[str, Dict[str, float]] = {}
+    for r in rows:
+        bucket = dept.setdefault(r["department"], {"count": 0, "sum": 0.0, "at_risk": 0})
+        bucket["count"] += 1
+        bucket["sum"] += r["current_points"]
+        if r["current_points"] <= 2.0:
+            bucket["at_risk"] += 1
+    departments = [
+        {
+            "department": name,
+            "count": int(b["count"]),
+            "avg_points": round(b["sum"] / b["count"], 2) if b["count"] else 0.0,
+            "at_risk": int(b["at_risk"]),
+        }
+        for name, b in sorted(dept.items())
+    ]
+
+    distribution = [{"label": label, "count": 0} for label, _ in POINT_BUCKETS]
+    for r in rows:
+        for i, (_, test) in enumerate(POINT_BUCKETS):
+            if test(r["current_points"]):
+                distribution[i]["count"] += 1
+                break
+
+    return {
+        "total_employees": total,
+        "at_risk_count": len(at_risk),
+        "average_points": avg,
+        "departments": departments,
+        "distribution": distribution,
+        "at_risk": at_risk,
     }
 
 
@@ -257,6 +329,18 @@ def create_app(
                 "by_provider": {},
             }
         return jsonify(snapshot)
+
+    @app.get("/api/analytics")
+    def api_analytics():
+        records: Optional[Dict[str, Any]] = None
+        if compliance is not None:
+            try:
+                records = compliance.all_records()
+            except Exception:  # noqa: BLE001 - fall back to the static store
+                records = None
+        if records is None:
+            records = store.all()
+        return jsonify(_analytics_from_records(records))
 
     # ---------------------------------------------------------------- chat --- #
     def _validate_chat(payload: Dict[str, Any]):

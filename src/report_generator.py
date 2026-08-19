@@ -21,7 +21,7 @@ class ComplianceReportGenerator:
             status = "Written Warning Active"
             
         md = []
-        md.append(f"# Investigative Review Meeting (IRM) Brief")
+        md.append("# Investigative Review Meeting (IRM) Brief")
         md.append(f"**Date Generated:** {datetime.date.today().strftime('%Y-%m-%d')}")
         md.append(f"**Employee ID:** {employee_id}")
         md.append(f"**Current Compliance Points:** {current_points} / 7.0")
