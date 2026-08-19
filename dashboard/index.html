@@ -29,6 +29,7 @@
           <option value="EMP109">EMP109 - Bruce Wayne</option>
           <option value="EMP110">EMP110 - Clark Kent</option>
         </select>
+        <button id="signout-btn" class="signout-btn" style="display:none;" onclick="signOut()">Sign out</button>
       </div>
     </header>
 
@@ -36,6 +37,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('compliance')">Compliance & Escalations</button>
       <button class="tab-btn" onclick="switchTab('operations')">Operational Shift & Schedules</button>
+      <button class="tab-btn" onclick="switchTab('analytics')">Analytics</button>
     </div>
 
     <!-- 1. COMPLIANCE DASHBOARD -->
@@ -46,6 +48,7 @@
           <span class="stat-label">Compliance Balance</span>
           <div class="stat-value" id="points-val">7.0</div>
           <span id="warning-badge" class="badge badge-success">Good Standing</span>
+          <button type="button" class="explain-btn" onclick="explainCurrentPoints()">Explain these points</button>
         </div>
         <div class="card stat-card">
           <span class="stat-label">Freebies Used (Rolling 12m)</span>
@@ -195,9 +198,90 @@ Select an option from the Compliance Action Hub to generate and view the warning
         </div>
       </div>
     </div>
+
+    <!-- 3. ANALYTICS DASHBOARD -->
+    <div id="analytics-panel" class="dashboard-panel">
+      <div class="grid-3">
+        <div class="card stat-card">
+          <span class="stat-label">Workforce Size</span>
+          <div class="stat-value" id="an-total">0</div>
+          <span class="stat-label" style="font-size:0.8rem;">employees tracked</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">At-Risk (&le; 2.0 pts)</span>
+          <div class="stat-value" id="an-atrisk" style="color:#ef4444;">0</div>
+          <span class="stat-label" style="font-size:0.8rem;">on written / termination warning</span>
+        </div>
+        <div class="card stat-card">
+          <span class="stat-label">Average Balance</span>
+          <div class="stat-value" id="an-avg">0.0</div>
+          <span class="stat-label" style="font-size:0.8rem;">points across roster</span>
+        </div>
+      </div>
+
+      <div class="grid-2-1">
+        <div class="card">
+          <h3>Department Comparison</h3>
+          <table id="an-dept-table">
+            <thead>
+              <tr>
+                <th>Department</th>
+                <th>Headcount</th>
+                <th>Avg Points</th>
+                <th>At-Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>Points Distribution</h3>
+          <div id="an-distribution" class="an-distribution">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>At-Risk Employees</h3>
+        <div id="an-atrisk-list" class="an-atrisk-list">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attendance Assistant (chatbot) -->
+  <button id="chat-fab" class="chat-fab" aria-label="Open attendance assistant">
+    <span>💬</span> Ask the Assistant
+  </button>
+  <div id="chat-panel" class="chat-panel" role="dialog" aria-label="Attendance assistant" hidden>
+    <div class="chat-header">
+      <div class="chat-title">
+        <strong>Attendance Assistant</strong>
+        <span id="chat-status" class="chat-status">Grounded in live attendance data</span>
+      </div>
+      <button id="chat-close" class="chat-close" aria-label="Close assistant">&times;</button>
+    </div>
+    <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+    <div class="chat-suggestions" id="chat-suggestions">
+      <button type="button" class="chip">Who is at risk of termination?</button>
+      <button type="button" class="chip">Why was EMP101 excused in May?</button>
+      <button type="button" class="chip">Who has the lowest points?</button>
+      <button type="button" class="chip">List everyone on a written warning</button>
+    </div>
+    <form id="chat-form" class="chat-input">
+      <textarea id="chat-text" rows="1" placeholder="Ask about any employee's attendance…" autocomplete="off"></textarea>
+      <button type="submit" id="chat-send" aria-label="Send">Send</button>
+    </form>
+    <div id="chat-usage" class="chat-usage"></div>
   </div>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
+  <script src="analytics.js"></script>
+  <script src="chat.js"></script>
 </body>
 </html>
