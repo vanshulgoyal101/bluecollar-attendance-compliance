@@ -392,8 +392,8 @@ tr:hover td {
   bottom: 1.5rem;
   right: 1.5rem;
   z-index: 950;
-  width: min(560px, calc(100vw - 2.5rem));
-  height: min(760px, calc(100vh - 2.5rem));
+  width: min(840px, calc(100vw - 2rem));
+  height: min(1140px, calc(100vh - 2rem));
   display: flex;
   flex-direction: column;
   background: var(--card-bg);
