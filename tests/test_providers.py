@@ -13,12 +13,13 @@ from src.llm.providers import (
 
 
 class FakeResp:
-    def __init__(self, status=200, json_data=None, text="", lines=None):
+    def __init__(self, status=200, json_data=None, text="", lines=None, headers=None):
         self.status_code = status
         self.ok = 200 <= status < 300
         self._json = json_data if json_data is not None else {}
         self.text = text
         self._lines = lines or []
+        self.headers = headers or {}
 
     def json(self):
         return self._json
