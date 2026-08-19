@@ -3,3 +3,7 @@ pyyaml
 pandas
 pytest
 pydantic
+flask
+requests
+python-dotenv
+gunicorn

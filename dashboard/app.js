@@ -12,25 +12,18 @@ function esc(value) {
 
 function switchTab(tabName) {
   // Update buttons
-  const buttons = document.querySelectorAll('.tab-btn');
-  buttons.forEach(btn => {
-    if (btn.getAttribute('onclick').includes(tabName)) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    const target = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', target.includes("'" + tabName + "'"));
   });
 
-  // Update panels
-  const compliancePanel = document.getElementById('compliance-panel');
-  const operationsPanel = document.getElementById('operations-panel');
+  // Update panels (compliance / operations / analytics)
+  document.querySelectorAll('.dashboard-panel').forEach(panel => {
+    panel.classList.toggle('active', panel.id === tabName + '-panel');
+  });
 
-  if (tabName === 'compliance') {
-    compliancePanel.classList.add('active');
-    operationsPanel.classList.remove('active');
-  } else {
-    compliancePanel.classList.remove('active');
-    operationsPanel.classList.add('active');
+  if (tabName === 'analytics' && typeof renderAnalytics === 'function') {
+    renderAnalytics();
   }
 }
 
@@ -390,6 +383,41 @@ window.onclick = function(event) {
     closeModal();
   }
 };
+
+// --- Assistant deep-link (F-37): explain the selected employee's points ---
+function explainCurrentPoints() {
+  const data = employeeData[currentEmployeeId];
+  if (!data) return;
+  const question =
+    `Explain ${currentEmployeeId} ${data.name}'s current point balance and the ` +
+    `infractions that caused it, as of 2026-05-31.`;
+  if (window.AttendanceAssistant && window.AttendanceAssistant.ask) {
+    window.AttendanceAssistant.ask(question);
+  }
+}
+
+// --- Auth (F-50): 401-aware fetch + sign-out, shared with chat.js/analytics.js ---
+async function apiFetch(url, options) {
+  const res = await fetch(url, options);
+  if (res.status === 401) {
+    window.location.href = '/login';
+  }
+  return res;
+}
+
+function updateAuthUI(authRequired) {
+  const btn = document.getElementById('signout-btn');
+  if (btn) btn.style.display = authRequired ? 'inline-flex' : 'none';
+}
+
+async function signOut() {
+  try {
+    await fetch('/api/logout', { method: 'POST' });
+  } catch (_) {
+    // ignore — redirect regardless
+  }
+  window.location.href = '/login';
+}
 
 // Init
 window.onload = () => {
