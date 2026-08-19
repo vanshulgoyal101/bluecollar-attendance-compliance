@@ -1,0 +1,962 @@
+{
+  "EMP101": {
+    "current_points": 0.5,
+    "department": "Logistics & Fulfillment",
+    "excused_absences": 4,
+    "fmla_approved_cases": 2,
+    "freebies_used": 3,
+    "freeze_history": [
+      {
+        "end": "2026-06-15",
+        "start": "2026-02-15",
+        "status": "Active"
+      }
+    ],
+    "history": [
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2023-01-15",
+        "details": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2023-02-10",
+        "details": "Freebie Lo (occurrence 2 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2023-03-20",
+        "details": "Freebie Lo (occurrence 3 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 6.0,
+        "code": "skp",
+        "date": "2023-05-01",
+        "details": "Unprotected sick period",
+        "points": -1.0,
+        "roll_on": "2024-04-30",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 5.5,
+        "code": "LT",
+        "date": "2023-08-10",
+        "details": "Late >14 mins",
+        "points": -0.5,
+        "roll_on": "2024-08-09",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 2.5,
+        "code": "IANS",
+        "date": "2023-11-15",
+        "details": "No call no show",
+        "points": -3.0,
+        "roll_on": "2024-11-14",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 1.5,
+        "code": "skp",
+        "date": "2024-01-10",
+        "details": "Unprotected sick period",
+        "points": -1.0,
+        "roll_on": "2025-01-09",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 2.5,
+        "code": "ROLL-ON",
+        "date": "2024-04-30",
+        "details": "Recovery of 2023-05-01 skp deduction",
+        "points": 1.0,
+        "status": "Rolled-on (Expired)"
+      },
+      {
+        "balance": 3.0,
+        "code": "ROLL-ON",
+        "date": "2024-08-09",
+        "details": "Recovery of 2023-08-10 LT deduction",
+        "points": 0.5,
+        "status": "Rolled-on (Expired)"
+      },
+      {
+        "balance": 6.0,
+        "code": "ROLL-ON",
+        "date": "2024-11-14",
+        "details": "Recovery of 2023-11-15 IANS deduction",
+        "points": 3.0,
+        "status": "Rolled-on (Expired)"
+      },
+      {
+        "balance": 7.0,
+        "code": "ROLL-ON",
+        "date": "2025-01-09",
+        "details": "Recovery of 2024-01-10 skp deduction",
+        "points": 1.0,
+        "status": "Rolled-on (Expired)"
+      },
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2025-03-15",
+        "details": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 6.0,
+        "code": "skp",
+        "date": "2025-06-01",
+        "details": "Unprotected sick period",
+        "points": -1.0,
+        "roll_on": "2026-06-01",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 6.0,
+        "code": "skp",
+        "date": "2025-06-02",
+        "details": "Consecutive sick day under same skp period",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 3.0,
+        "code": "IANS",
+        "date": "2025-08-15",
+        "details": "No call no show",
+        "points": -3.0,
+        "roll_on": "2026-08-15",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 2.5,
+        "code": "LT",
+        "date": "2025-10-10",
+        "details": "Late >14 mins",
+        "points": -0.5,
+        "roll_on": "2026-10-10",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 0.5,
+        "code": "LTNC",
+        "date": "2026-02-15",
+        "details": "Late reported absence",
+        "points": -2.0,
+        "roll_on": "2027-02-15",
+        "status": "Active Deduction"
+      }
+    ],
+    "join_date": "2022-03-01",
+    "name": "Vanshul Goyal",
+    "role": "Senior Warehouse Operator",
+    "schedule": [
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2023-01-15",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2023-02-10",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 2 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2023-03-20",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 3 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "skp (Unprotected Sick)",
+        "base": "SW (Scheduled Work)",
+        "date": "2023-05-01",
+        "dto": false,
+        "notes": "Unprotected sick period",
+        "roll_on": "2024-04-30",
+        "status": "Point Deducted (-1.0)"
+      },
+      {
+        "actual": "LT (Late >14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2023-08-10",
+        "dto": false,
+        "notes": "Late >14 mins",
+        "roll_on": "2024-08-09",
+        "status": "Point Deducted (-0.5)"
+      },
+      {
+        "actual": "IANS (No Call No Show)",
+        "base": "SW (Scheduled Work)",
+        "date": "2023-11-15",
+        "dto": false,
+        "notes": "No call no show",
+        "roll_on": "2024-11-14",
+        "status": "Point Deducted (-3.0)"
+      },
+      {
+        "actual": "skp (Unprotected Sick)",
+        "base": "SW (Scheduled Work)",
+        "date": "2024-01-10",
+        "dto": false,
+        "notes": "Unprotected sick period",
+        "roll_on": "2025-01-09",
+        "status": "Point Deducted (-1.0)"
+      },
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-03-15",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "skp (Unprotected Sick)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-06-01",
+        "dto": false,
+        "notes": "Unprotected sick period",
+        "roll_on": "2026-06-01",
+        "status": "Point Deducted (-1.0)"
+      },
+      {
+        "actual": "skp (Unprotected Sick)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-06-02",
+        "dto": false,
+        "notes": "Consecutive sick day under same skp period",
+        "status": "Consecutive - No Penalty",
+        "supervisor_note": "Vanshul called in sick a second consecutive day; continuing the same skp period."
+      },
+      {
+        "actual": "IANS (No Call No Show)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-08-15",
+        "dto": false,
+        "notes": "No call no show",
+        "roll_on": "2026-08-15",
+        "status": "Point Deducted (-3.0)"
+      },
+      {
+        "actual": "LT (Late >14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-10-10",
+        "dto": false,
+        "notes": "Late >14 mins",
+        "roll_on": "2026-10-10",
+        "status": "Point Deducted (-0.5)"
+      },
+      {
+        "actual": "LTNC (Late Reported)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-02-15",
+        "dto": false,
+        "notes": "Late reported absence",
+        "roll_on": "2027-02-15",
+        "status": "Point Deducted (-2.0)"
+      }
+    ],
+    "sick_balance_hours": 32,
+    "starting_points": 7.0,
+    "vacation_hours": 80,
+    "warning_status": "Termination Warning Active",
+    "warnings": [
+      {
+        "date": "2024-01-10",
+        "level": "Written Warning (<= 2.0)",
+        "points": 1.5
+      },
+      {
+        "date": "2026-02-15",
+        "level": "Termination Warning (<= 1.0)",
+        "points": 0.5
+      }
+    ]
+  },
+  "EMP102": {
+    "current_points": 7.0,
+    "department": "Manufacturing Operations",
+    "excused_absences": 0,
+    "fmla_approved_cases": 0,
+    "freebies_used": 0,
+    "freeze_history": [],
+    "history": [
+      {
+        "balance": 4.0,
+        "code": "IANS",
+        "date": "2025-01-10",
+        "details": "No call no show",
+        "points": -3.0,
+        "roll_on": "2026-01-10",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 2.0,
+        "code": "LTNC",
+        "date": "2025-01-11",
+        "details": "Late reported absence",
+        "points": -2.0,
+        "roll_on": "2026-01-11",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 5.0,
+        "code": "ROLL-ON",
+        "date": "2026-01-10",
+        "details": "Recovery of 2025-01-10 IANS deduction",
+        "points": 3.0,
+        "status": "Rolled-on (Expired)"
+      },
+      {
+        "balance": 7.0,
+        "code": "ROLL-ON",
+        "date": "2026-01-11",
+        "details": "Recovery of 2025-01-11 LTNC deduction",
+        "points": 2.0,
+        "status": "Rolled-on (Expired)"
+      }
+    ],
+    "join_date": "2020-06-15",
+    "name": "Sarah Connor",
+    "role": "Assembly Line Supervisor",
+    "schedule": [
+      {
+        "actual": "IANS (No Call No Show)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-01-10",
+        "dto": false,
+        "notes": "No call no show",
+        "roll_on": "2026-01-10",
+        "status": "Point Deducted (-3.0)"
+      },
+      {
+        "actual": "LTNC (Late Reported)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-01-11",
+        "dto": false,
+        "notes": "Late reported absence",
+        "roll_on": "2026-01-11",
+        "status": "Point Deducted (-2.0)"
+      }
+    ],
+    "sick_balance_hours": 16,
+    "starting_points": 7.0,
+    "vacation_hours": 48,
+    "warning_status": "Good Standing",
+    "warnings": [
+      {
+        "date": "2025-01-11",
+        "level": "Written Warning (<= 2.0)",
+        "points": 2.0
+      }
+    ]
+  },
+  "EMP103": {
+    "current_points": 7.0,
+    "department": "Logistics & Fulfillment",
+    "excused_absences": 0,
+    "fmla_approved_cases": 0,
+    "freebies_used": 0,
+    "freeze_history": [],
+    "history": [],
+    "join_date": "2024-01-10",
+    "name": "Marcus Wright",
+    "role": "Inventory Handler",
+    "schedule": [
+      {
+        "actual": "SW (Scheduled Work)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-01-01",
+        "dto": false,
+        "notes": "",
+        "status": "Normal"
+      }
+    ],
+    "sick_balance_hours": 40,
+    "starting_points": 7.0,
+    "vacation_hours": 120,
+    "warning_status": "Good Standing",
+    "warnings": []
+  },
+  "EMP104": {
+    "current_points": 1.0,
+    "department": "Quality Assurance",
+    "excused_absences": 0,
+    "fmla_approved_cases": 0,
+    "freebies_used": 3,
+    "freeze_history": [
+      {
+        "end": "2026-08-13",
+        "start": "2026-04-15",
+        "status": "Active"
+      }
+    ],
+    "history": [
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2025-06-05",
+        "details": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2025-07-10",
+        "details": "Freebie Lo (occurrence 2 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2025-08-15",
+        "details": "Freebie Lo (occurrence 3 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 4.0,
+        "code": "IANS",
+        "date": "2026-01-15",
+        "details": "No call no show",
+        "points": -3.0,
+        "roll_on": "2027-01-15",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 2.0,
+        "code": "LTNC",
+        "date": "2026-02-20",
+        "details": "Late reported absence",
+        "points": -2.0,
+        "roll_on": "2027-02-20",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 1.5,
+        "code": "LT",
+        "date": "2026-03-10",
+        "details": "Late >14 mins",
+        "points": -0.5,
+        "roll_on": "2027-03-10",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 1.0,
+        "code": "LT",
+        "date": "2026-04-15",
+        "details": "Late >14 mins",
+        "points": -0.5,
+        "roll_on": "2027-04-15",
+        "status": "Active Deduction"
+      }
+    ],
+    "join_date": "2023-05-20",
+    "name": "John Connor",
+    "role": "Operations Analyst",
+    "schedule": [
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-06-05",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-07-10",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 2 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-08-15",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 3 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "IANS (No Call No Show)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-01-15",
+        "dto": false,
+        "notes": "No call no show",
+        "roll_on": "2027-01-15",
+        "status": "Point Deducted (-3.0)"
+      },
+      {
+        "actual": "LTNC (Late Reported)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-02-20",
+        "dto": false,
+        "notes": "Late reported absence",
+        "roll_on": "2027-02-20",
+        "status": "Point Deducted (-2.0)"
+      },
+      {
+        "actual": "LT (Late >14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-03-10",
+        "dto": false,
+        "notes": "Late >14 mins",
+        "roll_on": "2027-03-10",
+        "status": "Point Deducted (-0.5)"
+      },
+      {
+        "actual": "LT (Late >14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-04-15",
+        "dto": false,
+        "notes": "Late >14 mins",
+        "roll_on": "2027-04-15",
+        "status": "Point Deducted (-0.5)"
+      }
+    ],
+    "sick_balance_hours": 8,
+    "starting_points": 7.0,
+    "vacation_hours": 16,
+    "warning_status": "Termination Warning Active",
+    "warnings": [
+      {
+        "date": "2026-02-20",
+        "level": "Written Warning (<= 2.0)",
+        "points": 2.0
+      },
+      {
+        "date": "2026-03-10",
+        "level": "Written Warning (<= 2.0)",
+        "points": 1.5
+      },
+      {
+        "date": "2026-04-15",
+        "level": "Termination Warning (<= 1.0)",
+        "points": 1.0
+      }
+    ]
+  },
+  "EMP105": {
+    "current_points": 0.0,
+    "department": "Facilities",
+    "excused_absences": 0,
+    "fmla_approved_cases": 0,
+    "freebies_used": 1,
+    "freeze_history": [
+      {
+        "end": "2026-07-28",
+        "start": "2026-03-30",
+        "status": "Active"
+      }
+    ],
+    "history": [
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2025-11-10",
+        "details": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 4.0,
+        "code": "IANS",
+        "date": "2026-01-20",
+        "details": "No call no show",
+        "points": -3.0,
+        "roll_on": "2027-01-20",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 2.0,
+        "code": "LTNC",
+        "date": "2026-02-25",
+        "details": "Late reported absence",
+        "points": -2.0,
+        "roll_on": "2027-02-25",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 0.0,
+        "code": "LTNC",
+        "date": "2026-03-30",
+        "details": "Late reported absence",
+        "points": -2.0,
+        "roll_on": "2027-03-30",
+        "status": "Active Deduction"
+      }
+    ],
+    "join_date": "2021-08-01",
+    "name": "Kyle Reese",
+    "role": "Maintenance Technician",
+    "schedule": [
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-11-10",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "IANS (No Call No Show)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-01-20",
+        "dto": false,
+        "notes": "No call no show",
+        "roll_on": "2027-01-20",
+        "status": "Point Deducted (-3.0)"
+      },
+      {
+        "actual": "LTNC (Late Reported)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-02-25",
+        "dto": false,
+        "notes": "Late reported absence",
+        "roll_on": "2027-02-25",
+        "status": "Point Deducted (-2.0)"
+      },
+      {
+        "actual": "LTNC (Late Reported)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-03-30",
+        "dto": false,
+        "notes": "Late reported absence",
+        "roll_on": "2027-03-30",
+        "status": "Point Deducted (-2.0)"
+      }
+    ],
+    "sick_balance_hours": 0,
+    "starting_points": 7.0,
+    "vacation_hours": 0,
+    "warning_status": "TERMINATION PROTOCOL TRIGGERED",
+    "warnings": [
+      {
+        "date": "2026-02-25",
+        "level": "Written Warning (<= 2.0)",
+        "points": 2.0
+      },
+      {
+        "date": "2026-03-30",
+        "level": "Termination Warning (<= 0.0)",
+        "points": 0.0
+      }
+    ]
+  },
+  "EMP106": {
+    "current_points": 7.0,
+    "department": "Logistics & Fulfillment",
+    "excused_absences": 0,
+    "fmla_approved_cases": 3,
+    "freebies_used": 0,
+    "freeze_history": [],
+    "history": [
+      {
+        "balance": 7.0,
+        "code": "LTDR",
+        "date": "2024-05-10",
+        "details": "[Mocked Exception] Supervisor note mentions FMLA/Family Medical Leave.",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 7.0,
+        "code": "LTDR",
+        "date": "2024-09-12",
+        "details": "[Mocked Exception] Supervisor note mentions FMLA/Family Medical Leave.",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 7.0,
+        "code": "skps",
+        "date": "2025-03-04",
+        "details": "[Mocked Exception] Supervisor note mentions FMLA/Family Medical Leave.",
+        "points": 0.0,
+        "status": "Exempted"
+      }
+    ],
+    "join_date": "2020-11-12",
+    "name": "Ellen Ripley",
+    "role": "Inventory Supervisor",
+    "schedule": [
+      {
+        "actual": "LTDR (Personal)",
+        "base": "SW (Scheduled Work)",
+        "date": "2024-05-10",
+        "dto": false,
+        "notes": "[Mocked Exception] Supervisor note mentions FMLA/Family Medical Leave.",
+        "status": "Exempted (FMLA)",
+        "supervisor_note": "FMLA leave approved by HR for a family surgery."
+      },
+      {
+        "actual": "LTDR (Personal)",
+        "base": "SW (Scheduled Work)",
+        "date": "2024-09-12",
+        "dto": false,
+        "notes": "[Mocked Exception] Supervisor note mentions FMLA/Family Medical Leave.",
+        "status": "Exempted (FMLA)",
+        "supervisor_note": "FMLA protected sickness; documentation on file."
+      },
+      {
+        "actual": "skps (Protected Sick)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-03-04",
+        "dto": false,
+        "notes": "[Mocked Exception] Supervisor note mentions FMLA/Family Medical Leave.",
+        "status": "Exempted (FMLA)",
+        "supervisor_note": "FMLA protected sick day; approved medical leave."
+      }
+    ],
+    "sick_balance_hours": 40,
+    "starting_points": 7.0,
+    "vacation_hours": 160,
+    "warning_status": "Good Standing",
+    "warnings": []
+  },
+  "EMP107": {
+    "current_points": 6.5,
+    "department": "Quality Assurance",
+    "excused_absences": 0,
+    "fmla_approved_cases": 0,
+    "freebies_used": 3,
+    "freeze_history": [],
+    "history": [
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2025-11-05",
+        "details": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2025-12-10",
+        "details": "Freebie Lo (occurrence 2 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2026-01-15",
+        "details": "Freebie Lo (occurrence 3 of 3 in 12m)",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 6.5,
+        "code": "Lo",
+        "date": "2026-03-20",
+        "details": "Late <=14 mins",
+        "points": -0.5,
+        "roll_on": "2027-03-20",
+        "status": "Active Deduction"
+      }
+    ],
+    "join_date": "2025-01-05",
+    "name": "Peter Parker",
+    "role": "Safety Inspector",
+    "schedule": [
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-11-05",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 1 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-12-10",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 2 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-01-15",
+        "dto": false,
+        "notes": "Freebie Lo (occurrence 3 of 3 in 12m)",
+        "status": "Excused"
+      },
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-03-20",
+        "dto": false,
+        "notes": "Late <=14 mins",
+        "roll_on": "2027-03-20",
+        "status": "Point Deducted (-0.5)"
+      }
+    ],
+    "sick_balance_hours": 32,
+    "starting_points": 7.0,
+    "vacation_hours": 40,
+    "warning_status": "Good Standing",
+    "warnings": []
+  },
+  "EMP108": {
+    "current_points": 4.5,
+    "department": "Facilities",
+    "excused_absences": 1,
+    "fmla_approved_cases": 0,
+    "freebies_used": 0,
+    "freeze_history": [],
+    "history": [
+      {
+        "balance": 7.0,
+        "code": "Lo",
+        "date": "2025-11-10",
+        "details": "[Mocked Exception] Supervisor explicitly noted to let it slide or approved the exception.",
+        "points": 0.0,
+        "status": "Exempted"
+      },
+      {
+        "balance": 5.0,
+        "code": "LTNC",
+        "date": "2025-12-05",
+        "details": "Late reported absence",
+        "points": -2.0,
+        "roll_on": "2026-12-05",
+        "status": "Active Deduction"
+      },
+      {
+        "balance": 4.5,
+        "code": "LT",
+        "date": "2026-01-20",
+        "details": "Late >14 mins",
+        "points": -0.5,
+        "roll_on": "2027-01-20",
+        "status": "Active Deduction"
+      }
+    ],
+    "join_date": "2022-10-01",
+    "name": "Tony Stark",
+    "role": "Machinist Tech",
+    "schedule": [
+      {
+        "actual": "Lo (Late <=14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-11-10",
+        "dto": false,
+        "notes": "[Mocked Exception] Supervisor explicitly noted to let it slide or approved the exception.",
+        "status": "Excused (Supervisor Override)",
+        "supervisor_note": "Approved by supervisor; letting the late arrival slide this once."
+      },
+      {
+        "actual": "LTNC (Late Reported)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-12-05",
+        "dto": false,
+        "notes": "Late reported absence",
+        "roll_on": "2026-12-05",
+        "status": "Point Deducted (-2.0)"
+      },
+      {
+        "actual": "LT (Late >14m)",
+        "base": "SW (Scheduled Work)",
+        "date": "2026-01-20",
+        "dto": false,
+        "notes": "Late >14 mins",
+        "roll_on": "2027-01-20",
+        "status": "Point Deducted (-0.5)"
+      }
+    ],
+    "sick_balance_hours": 24,
+    "starting_points": 7.0,
+    "vacation_hours": 96,
+    "warning_status": "Good Standing",
+    "warnings": []
+  },
+  "EMP109": {
+    "current_points": 7.0,
+    "department": "Logistics & Fulfillment",
+    "excused_absences": 0,
+    "fmla_approved_cases": 0,
+    "freebies_used": 0,
+    "freeze_history": [],
+    "history": [],
+    "join_date": "2023-09-15",
+    "name": "Bruce Wayne",
+    "role": "Logistics Planner",
+    "schedule": [
+      {
+        "actual": "DO (Day Off)",
+        "base": "DTO (Day Trade)",
+        "date": "2024-11-20",
+        "dto": true,
+        "notes": "",
+        "status": "Swapped"
+      },
+      {
+        "actual": "DO (Day Off)",
+        "base": "DTO (Day Trade)",
+        "date": "2025-02-10",
+        "dto": true,
+        "notes": "",
+        "status": "Swapped"
+      }
+    ],
+    "sick_balance_hours": 40,
+    "starting_points": 7.0,
+    "vacation_hours": 88,
+    "warning_status": "Good Standing",
+    "warnings": []
+  },
+  "EMP110": {
+    "current_points": 7.0,
+    "department": "Logistics & Fulfillment",
+    "excused_absences": 0,
+    "fmla_approved_cases": 0,
+    "freebies_used": 0,
+    "freeze_history": [],
+    "history": [],
+    "join_date": "2025-06-01",
+    "name": "Clark Kent",
+    "role": "Receiving Agent",
+    "schedule": [
+      {
+        "actual": "SW (Scheduled Work)",
+        "base": "SW (Scheduled Work)",
+        "date": "2025-07-01",
+        "dto": false,
+        "notes": "",
+        "status": "Normal"
+      }
+    ],
+    "sick_balance_hours": 40,
+    "starting_points": 7.0,
+    "vacation_hours": 32,
+    "warning_status": "Good Standing",
+    "warnings": []
+  }
+}
