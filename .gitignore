@@ -8,3 +8,6 @@ env/
 venv/
 ENV/
 reports/
+
+# Runtime chat audit log (F-34) — never commit conversation logs
+data/chat_log.jsonl
