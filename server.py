@@ -136,17 +136,29 @@ def _iter_stream(
     """
     meta: Dict[str, Any] = {"provider": "stream", "model": None}
     stream = getattr(chatbot, "stream", None)
+    parts: List[str] = []
     if callable(stream):
         for chunk in stream(question, history=history):
             if chunk:
+                parts.append(str(chunk))
                 yield {"delta": str(chunk)}
     else:
         result = chatbot.answer(question, history=history)
         meta["provider"] = result.get("provider", "offline")
         meta["model"] = result.get("model")
+        if result.get("suggestions"):
+            meta["suggestions"] = result["suggestions"]
         text = result.get("answer", "")
+        parts.append(text)
         for i in range(0, len(text), STREAM_CHUNK_SIZE):
             yield {"delta": text[i : i + STREAM_CHUNK_SIZE]}
+    if "suggestions" not in meta:
+        make = getattr(chatbot, "suggestions", None)
+        if callable(make):
+            try:
+                meta["suggestions"] = make(question, "".join(parts))
+            except Exception:  # noqa: BLE001 - suggestions are best-effort
+                meta["suggestions"] = []
     yield {"done": True, **meta}
 
 
@@ -235,11 +247,13 @@ def create_app(
 
     @app.get("/api/health")
     def api_health():
+        quota_fn = getattr(chatbot.client, "quota_status", None)
         return jsonify(
             {
                 "status": "ok",
                 "llm_configured": chatbot.client.is_configured(),
                 "providers": chatbot.client.provider_status(),
+                "quota": quota_fn() if callable(quota_fn) else [],
                 "auth_required": auth_enabled(),
             }
         )

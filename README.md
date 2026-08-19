@@ -4,6 +4,14 @@ An AI-native compliance engine and interactive dashboard built to automate workf
 
 This project solves operational inefficiencies in blue-collar operations using a combination of **deterministic policy engines** and **Retrieval-Augmented Generation (RAG) LLM note analysis** to automate administrative friction and investigative reviews.
 
+It also ships a **grounded attendance chatbot** (ask natural-language questions about any employee) backed by a **multi-provider, key-rotating LLM client** and a Flask API.
+
+## 📚 Documentation
+
+- [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md) — full architecture, components, data model, engine logic, LLM rotation, chatbot, and API reference.
+- [docs/FEATURES.md](docs/FEATURES.md) — catalog of existing, new, proposed, and future features (with stable IDs).
+- [docs/PARALLEL_WORK_PLAN.md](docs/PARALLEL_WORK_PLAN.md) — 3-worker split with file-ownership boundaries, interface contracts, and ready-to-paste prompts.
+
 ---
 
 ## 📋 The "No-Fault" Attendance Policy Rules

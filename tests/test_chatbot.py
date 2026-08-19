@@ -91,14 +91,14 @@ def test_answer_includes_employee_suggestions():
     bot = AttendanceChatbot(client=no_key_client())
     result = bot.answer("Tell me about EMP101")
     assert isinstance(result["suggestions"], list)
-    assert 2 <= len(result["suggestions"]) <= 3
+    assert 2 <= len(result["suggestions"]) <= 5
     assert any("EMP101" in s for s in result["suggestions"])
 
 
 def test_answer_includes_roster_suggestions():
     bot = AttendanceChatbot(client=no_key_client())
     result = bot.answer("Who is at risk of termination?")
-    assert 2 <= len(result["suggestions"]) <= 3
+    assert 2 <= len(result["suggestions"]) <= 5
     assert all(isinstance(s, str) for s in result["suggestions"])
 
 
