@@ -1,0 +1,122 @@
+{
+  "EMP101": {
+    "name": "Vanshul Goyal",
+    "join_date": "2022-03-01",
+    "role": "Senior Warehouse Operator",
+    "department": "Logistics & Fulfillment",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 2,
+    "excused_absences": 4,
+    "freebies_used": 3,
+    "sick_balance_hours": 32,
+    "vacation_hours": 80
+  },
+  "EMP102": {
+    "name": "Sarah Connor",
+    "join_date": "2020-06-15",
+    "role": "Assembly Line Supervisor",
+    "department": "Manufacturing Operations",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 0,
+    "excused_absences": 0,
+    "freebies_used": 0,
+    "sick_balance_hours": 16,
+    "vacation_hours": 48
+  },
+  "EMP103": {
+    "name": "Marcus Wright",
+    "join_date": "2024-01-10",
+    "role": "Inventory Handler",
+    "department": "Logistics & Fulfillment",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 0,
+    "excused_absences": 0,
+    "freebies_used": 0,
+    "sick_balance_hours": 40,
+    "vacation_hours": 120
+  },
+  "EMP104": {
+    "name": "John Connor",
+    "join_date": "2023-05-20",
+    "role": "Operations Analyst",
+    "department": "Quality Assurance",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 0,
+    "excused_absences": 0,
+    "freebies_used": 3,
+    "sick_balance_hours": 8,
+    "vacation_hours": 16
+  },
+  "EMP105": {
+    "name": "Kyle Reese",
+    "join_date": "2021-08-01",
+    "role": "Maintenance Technician",
+    "department": "Facilities",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 0,
+    "excused_absences": 0,
+    "freebies_used": 1,
+    "sick_balance_hours": 0,
+    "vacation_hours": 0
+  },
+  "EMP106": {
+    "name": "Ellen Ripley",
+    "join_date": "2020-11-12",
+    "role": "Inventory Supervisor",
+    "department": "Logistics & Fulfillment",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 3,
+    "excused_absences": 0,
+    "freebies_used": 0,
+    "sick_balance_hours": 40,
+    "vacation_hours": 160
+  },
+  "EMP107": {
+    "name": "Peter Parker",
+    "join_date": "2025-01-05",
+    "role": "Safety Inspector",
+    "department": "Quality Assurance",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 0,
+    "excused_absences": 0,
+    "freebies_used": 3,
+    "sick_balance_hours": 32,
+    "vacation_hours": 40
+  },
+  "EMP108": {
+    "name": "Tony Stark",
+    "join_date": "2022-10-01",
+    "role": "Machinist Tech",
+    "department": "Facilities",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 0,
+    "excused_absences": 1,
+    "freebies_used": 0,
+    "sick_balance_hours": 24,
+    "vacation_hours": 96
+  },
+  "EMP109": {
+    "name": "Bruce Wayne",
+    "join_date": "2023-09-15",
+    "role": "Logistics Planner",
+    "department": "Logistics & Fulfillment",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 0,
+    "excused_absences": 0,
+    "freebies_used": 0,
+    "sick_balance_hours": 40,
+    "vacation_hours": 88
+  },
+  "EMP110": {
+    "name": "Clark Kent",
+    "join_date": "2025-06-01",
+    "role": "Receiving Agent",
+    "department": "Logistics & Fulfillment",
+    "starting_points": 7.0,
+    "fmla_approved_cases": 0,
+    "excused_absences": 0,
+    "freebies_used": 0,
+    "sick_balance_hours": 40,
+    "vacation_hours": 32
+  }
+}
