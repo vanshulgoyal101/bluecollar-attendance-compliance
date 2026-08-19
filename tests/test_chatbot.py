@@ -54,11 +54,22 @@ def test_find_mentioned_by_id_and_name():
 
 def test_knowledge_base_includes_roster_and_details():
     store = EmployeeDataStore()
-    kb = store.build_knowledge_base("EMP101")
+    kb = store.build_knowledge_base("How is EMP101 doing?")
     assert "ROSTER" in kb
-    assert "EMP101" in kb
-    # Mentioned employee is placed first in the detail sections.
-    assert kb.index("### EMP101") < kb.index("### EMP102")
+    assert "EMP101" in kb            # listed in the roster
+    assert "### EMP101" in kb        # mentioned -> full detail section
+    assert "EMP110" in kb            # roster still lists everyone
+
+
+def test_knowledge_base_is_scoped_to_relevant_employees():
+    store = EmployeeDataStore()
+    # A specific-employee question does not dump every employee's full detail.
+    kb = store.build_knowledge_base("How is EMP101 doing?")
+    assert kb.count("### EMP") < 10
+    assert "### EMP101" in kb
+    # A roster-wide risk question focuses on the at-risk staff.
+    kb_risk = store.build_knowledge_base("Who is at risk of termination?")
+    assert "### EMP105" in kb_risk
 
 
 # --- Chatbot offline fallback -------------------------------------------- #
