@@ -392,8 +392,8 @@ tr:hover td {
   bottom: 1.5rem;
   right: 1.5rem;
   z-index: 950;
-  width: min(420px, calc(100vw - 3rem));
-  height: min(620px, calc(100vh - 3rem));
+  width: min(840px, calc(100vw - 2rem));
+  height: min(1140px, calc(100vh - 2rem));
   display: flex;
   flex-direction: column;
   background: var(--card-bg);
@@ -438,20 +438,21 @@ tr:hover td {
 }
 
 .chat-msg {
-  max-width: 85%;
-  padding: 0.7rem 0.95rem;
+  max-width: 88%;
+  padding: 0.75rem 1rem;
   border-radius: 14px;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.92rem;
+  line-height: 1.55;
   animation: fadeIn 0.2s ease;
-  white-space: pre-wrap;
   word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 .chat-msg.user {
   align-self: flex-end;
   background: var(--primary-gradient);
   color: #fff;
   border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
 }
 .chat-msg.bot {
   align-self: flex-start;
@@ -459,19 +460,57 @@ tr:hover td {
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-bottom-left-radius: 4px;
+  white-space: normal;
+  max-width: 92%;
+}
+
+/* Rich markdown inside bot messages */
+.chat-msg.bot > :first-child { margin-top: 0; }
+.chat-msg.bot > :last-child { margin-bottom: 0; }
+.chat-msg.bot p { margin: 0 0 0.6rem; }
+.chat-msg.bot h4,
+.chat-msg.bot h5,
+.chat-msg.bot h6 {
+  font-family: var(--font-display);
+  margin: 0.75rem 0 0.4rem;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+.chat-msg.bot h4 { font-size: 1.02rem; }
+.chat-msg.bot h5 { font-size: 0.95rem; }
+.chat-msg.bot h6 { font-size: 0.88rem; color: var(--text-secondary); }
+.chat-msg.bot ul,
+.chat-msg.bot ol { margin: 0.35rem 0 0.7rem; padding-left: 1.3rem; }
+.chat-msg.bot li { margin: 0.2rem 0; }
+.chat-msg.bot strong { font-weight: 700; }
+.chat-msg.bot em { font-style: italic; }
+.chat-msg.bot hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 0.7rem 0;
 }
 .chat-msg.bot code {
   background: rgba(29, 78, 216, 0.08);
   padding: 0.05rem 0.35rem;
   border-radius: 5px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
-.chat-msg.bot table { border-collapse: collapse; margin: 0.4rem 0; width: 100%; }
-.chat-msg.bot th, .chat-msg.bot td {
+.chat-msg.bot table {
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+  width: 100%;
+  font-size: 0.85rem;
+}
+.chat-msg.bot th,
+.chat-msg.bot td {
   border: 1px solid var(--border-color);
-  padding: 0.3rem 0.5rem;
+  padding: 0.35rem 0.55rem;
   text-align: left;
-  font-size: 0.82rem;
+}
+.chat-msg.bot thead th {
+  background: rgba(29, 78, 216, 0.06);
+  font-weight: 600;
 }
 .chat-msg .meta {
   display: block;

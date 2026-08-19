@@ -1,8 +1,17 @@
-# Workforce Attendance Compliance Engine & Dashboard
+# Workforce Attendance & Compliance Platform
 
-An AI-native compliance engine and interactive dashboard built to automate workforce attendance policies, enforce union/corporate guidelines fairly, and parse unstructured shift logs for regulatory excusals (like FMLA). 
+A production-minded platform that automates a blue-collar **"No-Fault" attendance
+policy** end to end: a deterministic point **engine**, AI **note-analysis + a
+grounded chatbot**, a **Flask JSON API**, and an interactive **operations
+dashboard**.
 
-This project solves operational inefficiencies in blue-collar operations using a combination of **deterministic policy engines** and **Retrieval-Augmented Generation (RAG) LLM note analysis** to automate administrative friction and investigative reviews.
+The design keeps the **numbers deterministic** (a day-by-day policy engine) while
+using **LLMs only for language** (interpreting supervisor notes and answering
+natural-language questions), so compliance decisions stay auditable.
+
+**Docs:** [Architecture](docs/ARCHITECTURE.md) · [API](docs/API.md) ·
+[Data model](docs/DATA_MODEL.md) · [Features](docs/FEATURES.md) ·
+[Testing](docs/TESTING.md) · [Deployment](docs/DEPLOYMENT.md)
 
 ---
 
@@ -38,31 +47,39 @@ When a points balance falls to or below **1.0**:
 
 ---
 
-## 🛠 Project Architecture
+## 🛠 Project Structure
 
 ```
 blue_collar_attendance_compliance/
-├── config.yaml            # Configurable point rules and thresholds
-├── requirements.txt       # Dependencies (LiteLLM, pandas, pytest, pyyaml, pydantic)
-├── main.py                # Ingestion and compliance report generator CLI
+├── config.yaml                 # Policy rules & thresholds
+├── main.py                     # Batch compliance report CLI
+├── server.py                   # Flask API + dashboard host (auth, SSE, analytics)
+├── wsgi.py, gunicorn.conf.py   # Production entrypoint + config
+├── Dockerfile, .dockerignore   # Container build
+├── Makefile                    # install / test / run / build-data / docker
+├── scripts/build_employees.py  # Regenerate canonical data/employees.json
 ├── src/
-│   ├── config.py          # Policy config loader
-│   ├── parser.py          # Raw CSV punch log & JSON notes parser
-│   ├── engine.py          # Timeline-based policy calculation engine
-│   ├── llm_client.py      # LiteLLM client for notes exception parsing (FMLA, overrides)
-│   └── report_generator.py# Generates markdown IRM Briefs and warning letters
-├── data/
-│   ├── punch_logs.csv     # Mock raw logs database
-│   └── supervisor_notes.json# Mock supervisor logs database
-├── dashboard/
-│   ├── index.html         # Frontend HTML structure
-│   ├── index.css          # Blue-white corporate dashboard styles
-│   ├── app.js             # Interactive rendering, modals, and scrolling
-│   └── data.js            # Mock dataset for 10 employees
-├── tests/
-│   └── test_engine.py     # Core rules logic unit tests
-└── reports/               # Auto-generated HR letters and meeting briefs
+│   ├── config.py               # PolicyConfig loader
+│   ├── parser.py               # CSV/JSON ingestion
+│   ├── engine.py               # Deterministic ComplianceEngine
+│   ├── compliance_service.py   # Engine-backed live records (contract 3.2)
+│   ├── data_store.py           # EmployeeDataStore + knowledge base (contract 3.1)
+│   ├── db.py                   # Optional SQLite layer
+│   ├── llm_client.py           # Supervisor-note exception analysis (offline mock)
+│   ├── report_generator.py     # IRM briefs + warning letters
+│   ├── chatbot.py              # Grounded AttendanceChatbot (+ offline fallback)
+│   ├── chat_store.py           # Append-only chat audit log
+│   └── llm/                    # env, providers, rotating_client, tools, usage
+├── dashboard/                  # index.html, index.css, app.js, chat.js,
+│                              # analytics.js, login.html, data.js
+├── data/                       # punch_logs.csv, supervisor_notes.json,
+│                              # employees_meta.json, employees.json (generated)
+├── tests/                      # pytest suite (see docs/TESTING.md)
+└── .github/workflows/ci.yml    # CI: pytest + data-staleness check
 ```
+
+See **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** for the component diagram and
+data-flow walkthrough.
 
 ---
 
@@ -103,13 +120,17 @@ python3 -m pytest
 > is not installed; it is only required for live LLM analysis.
 
 
-### 4. Run the Interactive Dashboard Locally
-To view the front-end dashboard, spin up a lightweight server from the `dashboard` directory:
+### 4. Run the Full App (Dashboard + Chatbot API)
+Serve the dashboard and JSON API with Flask:
 ```bash
-cd dashboard
-python3 -m http.server 8000
+python3 server.py           # http://127.0.0.1:5001  (set PORT to override)
+# or: make run
 ```
-Open **[http://localhost:8000](http://localhost:8000)** in your browser.
+Open **[http://127.0.0.1:5001](http://127.0.0.1:5001)**. Without LLM keys the
+chatbot uses a deterministic offline fallback, so everything still works. Add keys
+to `.env` (copy `.env.example`) for full conversational answers. See the
+**[API reference](docs/API.md)** for every endpoint and the
+**[deployment guide](docs/DEPLOYMENT.md)** for Docker / gunicorn / auth.
 
 ---
 
@@ -118,3 +139,42 @@ Open **[http://localhost:8000](http://localhost:8000)** in your browser.
 The application provides a two-dashboard linked tab interface:
 1. **Compliance & Escalations**: Tracks point trajectory balances, remaining freebies, active/past freeze states, and features a Warning Letter generator previewer. Clicking a freebie date scrolls smoothly to its row, and clicking on an excused point opens a modal detail popup showing the parsed supervisor note.
 2. **Operational Shift & Schedules**: Tracks remaining protected sick balances (starting at 40 hours/year), vacation days, base shift calendars, trade-off shift swaps (DTOs), and supervisor notes logs.
+3. **Analytics**: Department comparisons, at-risk counts and a points-distribution histogram (also available programmatically at `GET /api/analytics`).
+
+A floating **Attendance Assistant** (chat) answers natural-language questions
+grounded in the live dataset, with streaming responses and follow-up suggestions.
+
+---
+
+## 🔌 API at a glance
+
+| Method | Path | Purpose |
+| :----- | :--- | :------ |
+| GET | `/api/employees` | Full canonical dataset |
+| GET | `/api/employees/<id>` | One live-computed employee record |
+| GET | `/api/health` | LLM/provider + auth status |
+| GET | `/api/usage` | LLM token-usage snapshot |
+| GET | `/api/analytics` | Department / at-risk / distribution stats |
+| POST | `/api/chat` | Grounded answer `{answer, provider, suggestions}` |
+| POST | `/api/chat/stream` | Server-Sent Events stream of the answer |
+| POST | `/api/export/irm` | Download an IRM brief (Markdown) |
+| POST | `/api/login`, `/api/logout` | Optional token auth |
+
+Full details, request/response shapes and the SSE format are in
+**[docs/API.md](docs/API.md)**.
+
+## 🧪 Testing & CI
+
+`make test` (or `pytest -q`) runs the offline suite — engine, parser, config,
+compliance service, data builder, SQLite, LLM providers/rotation/tools/usage,
+chatbot, chat store, report generator, and the HTTP API. CI runs it on Python
+3.10–3.12 plus a data-staleness check. See **[docs/TESTING.md](docs/TESTING.md)**.
+
+## 📚 Documentation index
+
+- **[Architecture](docs/ARCHITECTURE.md)** — components, data flows, design decisions.
+- **[API reference](docs/API.md)** — every endpoint, auth, SSE, examples.
+- **[Data model](docs/DATA_MODEL.md)** — schemas + how balances are computed.
+- **[Features](docs/FEATURES.md)** — full catalogue (done / proposed / future).
+- **[Testing](docs/TESTING.md)** — suite map and how to run it.
+- **[Deployment](docs/DEPLOYMENT.md)** — Docker, gunicorn, env, auth.

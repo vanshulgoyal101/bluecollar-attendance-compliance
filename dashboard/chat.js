@@ -26,12 +26,127 @@
   // 401-aware fetch (app.js). Falls back to plain fetch if not yet defined.
   const http = typeof apiFetch === "function" ? apiFetch : fetch;
 
-  // Minimal, XSS-safe markdown: escape everything, then re-apply a few marks.
+  // Convert LaTeX-ish comparison macros to unicode (KaTeX isn't loaded) and
+  // drop stray $ delimiters the model sometimes emits.
+  function cleanMath(s) {
+    return s
+      .replace(/\$\s*\\?le(?:q)?\s*\$/g, "≤")
+      .replace(/\$\s*\\?ge(?:q)?\s*\$/g, "≥")
+      .replace(/\\le(?:q)?\b/g, "≤")
+      .replace(/\\ge(?:q)?\b/g, "≥")
+      .replace(/\\times\b/g, "×")
+      .replace(/\$([^$\n]*)\$/g, "$1");
+  }
+
+  // Inline marks applied to already-escaped text (keeps output XSS-safe).
+  function renderInline(s) {
+    s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    s = s.replace(/(^|[^*\w])\*([^*\n]+)\*(?![*\w])/g, "$1<em>$2</em>");
+    s = s.replace(/(^|[^_\w])_([^_\n]+)_(?![_\w])/g, "$1<em>$2</em>");
+    return s;
+  }
+
+  const isSeparatorRow = (l) =>
+    l != null && /^\s*\|?[:\- |]+\|?\s*$/.test(l) && l.includes("-");
+  const splitRow = (l) =>
+    l.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((c) => c.trim());
+
+  // Compact, XSS-safe Markdown → HTML: headings, lists, tables, rules, inline.
   function renderMarkdown(text) {
-    let html = esc(text);
-    html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-    return html;
+    const lines = cleanMath(String(text == null ? "" : text)).split("\n");
+    const out = [];
+    let list = null; // "ul" | "ol"
+    const closeList = () => {
+      if (list) {
+        out.push("</" + list + ">");
+        list = null;
+      }
+    };
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].replace(/\s+$/, "");
+      const t = line.trim();
+
+      if (t === "") {
+        closeList();
+        continue;
+      }
+      if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) {
+        closeList();
+        out.push("<hr>");
+        continue;
+      }
+      // Pipe table: this row + a separator row underneath.
+      if (t.includes("|") && isSeparatorRow(lines[i + 1])) {
+        closeList();
+        const headers = splitRow(line);
+        i += 2;
+        let html = "<table><thead><tr>";
+        headers.forEach((h) => (html += "<th>" + renderInline(esc(h)) + "</th>"));
+        html += "</tr></thead><tbody>";
+        while (i < lines.length && lines[i].includes("|") && lines[i].trim()) {
+          const cells = splitRow(lines[i]);
+          html += "<tr>";
+          for (let c = 0; c < headers.length; c++) {
+            html += "<td>" + renderInline(esc(cells[c] || "")) + "</td>";
+          }
+          html += "</tr>";
+          i++;
+        }
+        i--; // step back; loop will advance
+        out.push(html + "</tbody></table>");
+        continue;
+      }
+      const h = t.match(/^(#{1,6})\s+(.*)$/);
+      if (h) {
+        closeList();
+        const lvl = h[1].length;
+        const tag = lvl <= 2 ? "h4" : lvl === 3 ? "h5" : "h6";
+        out.push("<" + tag + ">" + renderInline(esc(h[2].trim())) + "</" + tag + ">");
+        continue;
+      }
+      const ul = t.match(/^[-*+]\s+(.*)$/);
+      if (ul) {
+        if (list !== "ul") {
+          closeList();
+          out.push("<ul>");
+          list = "ul";
+        }
+        out.push("<li>" + renderInline(esc(ul[1])) + "</li>");
+        continue;
+      }
+      const ol = t.match(/^\d+[.)]\s+(.*)$/);
+      if (ol) {
+        if (list !== "ol") {
+          closeList();
+          out.push("<ol>");
+          list = "ol";
+        }
+        out.push("<li>" + renderInline(esc(ol[1])) + "</li>");
+        continue;
+      }
+      // Paragraph: gather following plain lines into one block.
+      closeList();
+      const para = [line];
+      while (i + 1 < lines.length) {
+        const n = lines[i + 1].trim();
+        if (
+          n === "" ||
+          /^(#{1,6})\s+/.test(n) ||
+          /^[-*+]\s+/.test(n) ||
+          /^\d+[.)]\s+/.test(n) ||
+          /^(-{3,}|\*{3,}|_{3,})$/.test(n) ||
+          (n.includes("|") && isSeparatorRow(lines[i + 2]))
+        ) {
+          break;
+        }
+        para.push(lines[++i].replace(/\s+$/, ""));
+      }
+      out.push("<p>" + para.map((l) => renderInline(esc(l))).join("<br>") + "</p>");
+    }
+    closeList();
+    return out.join("");
   }
 
   function addMessage(role, text, meta) {

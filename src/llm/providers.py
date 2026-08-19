@@ -107,26 +107,13 @@ class GeminiProvider:
         json_mode: bool = False,
         max_tokens: Optional[int] = None,
     ) -> str:
-        system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
-        contents = [
-            {
-                "role": "model" if m["role"] == "assistant" else "user",
-                "parts": [{"text": m["content"]}],
-            }
-            for m in messages
-            if m["role"] != "system"
-        ]
-
-        generation_config: Dict[str, object] = {"temperature": temperature}
-        if json_mode:
-            generation_config["responseMimeType"] = "application/json"
-        if max_tokens:
-            generation_config["maxOutputTokens"] = max_tokens
-
-        body: Dict[str, object] = {
-            "contents": contents,
-            "generationConfig": generation_config,
+        body: Dict[str, Any] = {
+            "contents": self._text_contents(messages),
+            "generationConfig": self._generation_config(
+                temperature, json_mode, max_tokens
+            ),
         }
+        system = self._system_text(messages)
         if system:
             body["systemInstruction"] = {"parts": [{"text": system}]}
 
