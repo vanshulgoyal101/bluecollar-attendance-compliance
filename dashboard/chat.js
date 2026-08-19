@@ -15,6 +15,7 @@
   const sendBtn = document.getElementById("chat-send");
   const statusEl = document.getElementById("chat-status");
   const usageEl = document.getElementById("chat-usage");
+  const cooldownEl = document.getElementById("chat-cooldown");
   const suggestions = document.getElementById("chat-suggestions");
 
   // Conversation history sent back to the server for context.
@@ -190,6 +191,16 @@
     fab.style.display = "inline-flex";
   }
 
+  function clearChat() {
+    history.length = 0;
+    messagesEl.innerHTML = "";
+    addMessage(
+      "bot",
+      "New conversation — ask me anything about employee attendance or compliance."
+    );
+    textarea.focus();
+  }
+
   async function refreshStatus() {
     try {
       const res = await fetch("/api/health");
@@ -202,10 +213,35 @@
       } else {
         statusEl.innerText = "Offline data-lookup mode (no LLM keys)";
       }
+      renderCooldown(data.quota);
     } catch (_) {
       statusEl.innerText = "Run server.py to enable the assistant";
     }
     refreshUsage();
+  }
+
+  // Show which API keys are rate-limited and when their quota refreshes.
+  function renderCooldown(quota) {
+    if (!cooldownEl) return;
+    const down = (quota || []).filter((k) => k && !k.available);
+    if (!down.length) {
+      cooldownEl.innerText = "";
+      return;
+    }
+    const soonest = down
+      .map((k) => k.refresh_at)
+      .filter(Boolean)
+      .sort()[0];
+    const when = soonest ? soonest.split(" ")[1] || soonest : "soon";
+    cooldownEl.innerText =
+      "⏳ " +
+      down.length +
+      "/" +
+      quota.length +
+      " key" +
+      (quota.length === 1 ? "" : "s") +
+      " cooling down · next refresh ~" +
+      when;
   }
 
   async function refreshUsage() {
@@ -249,7 +285,7 @@
     const decoder = new TextDecoder();
     let buffer = "";
     let text = "";
-    let meta = { provider: "", model: null };
+    let meta = { provider: "", model: null, suggestions: [] };
 
     for (;;) {
       const { value, done } = await reader.read();
@@ -280,11 +316,17 @@
         if (evt.done) {
           meta.provider = evt.provider;
           meta.model = evt.model;
+          if (evt.suggestions) meta.suggestions = evt.suggestions;
         }
       }
     }
     if (!text) throw new Error("empty stream");
-    return { text: text, provider: meta.provider, model: meta.model };
+    return {
+      text: text,
+      provider: meta.provider,
+      model: meta.model,
+      suggestions: meta.suggestions,
+    };
   }
 
   async function send(question) {
@@ -298,11 +340,13 @@
     sendBtn.disabled = true;
 
     const hist = history.slice(0, -1).slice(-MAX_HISTORY);
-    const bot = addMessage("bot", "Thinking…");
+    const bot = addMessage("bot", "");
     bot.classList.add("typing");
+    bot.innerHTML =
+      '<span class="typing-dots"><span></span><span></span><span></span></span>';
 
     let answerText = "";
-    let meta = { provider: "", model: null };
+    let meta = { provider: "", model: null, suggestions: [] };
     let ok = false;
 
     // Prefer streaming; fall back to the non-streaming endpoint on any failure.
@@ -333,7 +377,11 @@
           return;
         }
         answerText = data.answer;
-        meta = { provider: data.provider, model: data.model };
+        meta = {
+          provider: data.provider,
+          model: data.model,
+          suggestions: data.suggestions || [],
+        };
         bot.innerHTML = renderMarkdown(answerText);
         ok = true;
       } catch (_) {
@@ -360,12 +408,34 @@
     const empId = detectEmpId(question + " " + answerText);
     if (empId) attachExport(bot, empId);
 
+    renderFollowups(bot, meta.suggestions);
+
     history.push({ role: "assistant", content: answerText });
     while (history.length > MAX_HISTORY) history.shift();
 
-    refreshUsage();
+    refreshStatus();
     sendBtn.disabled = false;
     textarea.focus();
+  }
+
+  // --- Follow-up suggestion chips (F-35) ---
+  function renderFollowups(el, list) {
+    if (!list || !list.length) return;
+    const wrap = document.createElement("div");
+    wrap.className = "followups";
+    const label = document.createElement("span");
+    label.className = "followups-label";
+    label.innerText = "Try next:";
+    wrap.appendChild(label);
+    list.slice(0, 5).forEach((q) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "followup-chip";
+      b.innerText = q;
+      b.addEventListener("click", () => send(q));
+      wrap.appendChild(b);
+    });
+    el.appendChild(wrap);
   }
 
   // --- IRM brief export (F-38) ---
@@ -430,6 +500,8 @@
   // --- Wiring ---
   fab.addEventListener("click", openPanel);
   closeBtn.addEventListener("click", closePanel);
+  const clearBtn = document.getElementById("chat-clear");
+  if (clearBtn) clearBtn.addEventListener("click", clearChat);
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -494,4 +566,5 @@
   })();
 
   refreshStatus();
+  setInterval(refreshStatus, 20000);
 })();

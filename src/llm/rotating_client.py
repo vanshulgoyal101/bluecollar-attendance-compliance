@@ -7,6 +7,8 @@ short cooldown so we stop hammering them. ``complete`` throws only when every
 provider/key combination has failed.
 """
 
+import datetime
+import logging
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, Iterator, List, Optional, Tuple
@@ -22,7 +24,9 @@ from .providers import (
 
 ChatMessage = Dict[str, Any]
 
-# Keys that hit a 429 are parked for this many seconds.
+logger = logging.getLogger(__name__)
+
+# Fallback cooldown for a 429'd key when the provider gives no retry hint.
 COOLDOWN_S = 60.0
 
 
@@ -136,6 +140,70 @@ class RotatingLLMClient:
         self._rr_cursor[provider_name] = (cur + 1) % key_count
         return cur % key_count
 
+    def _park_key(self, cool_key: str, retry_after: Optional[float]) -> None:
+        """Cool down a rate-limited key and log when its quota should refresh."""
+        cooldown = retry_after if (retry_after and retry_after > 0) else COOLDOWN_S
+        self._cooldown_until[cool_key] = time.monotonic() + cooldown
+        refresh_at = datetime.datetime.now() + datetime.timedelta(seconds=cooldown)
+        logger.warning(
+            "LLM key [%s] hit its quota (429). Quota refreshes ~%s (in %ss).",
+            cool_key,
+            refresh_at.strftime("%Y-%m-%d %H:%M:%S"),
+            round(cooldown),
+        )
+        if self._all_parked():
+            logger.warning(
+                "All LLM keys are rate-limited. Quota refresh schedule:\n%s",
+                self._quota_report(),
+            )
+
+    def _all_parked(self) -> bool:
+        now = time.monotonic()
+        return all(
+            self._cooldown_until.get(f"{provider.name}:{idx}", 0.0) > now
+            for provider, keys in self._registry
+            for idx in range(len(keys))
+        )
+
+    def _quota_report(self) -> str:
+        lines = []
+        for row in self.quota_status():
+            if row["available"]:
+                lines.append(f"  {row['key']}: available now")
+            else:
+                lines.append(
+                    f"  {row['key']}: refreshes ~{row['refresh_at']} "
+                    f"(in {round(row['seconds_until_refresh'])}s)"
+                )
+        return "\n".join(lines)
+
+    def quota_status(self) -> List[Dict[str, Any]]:
+        """Per-key rate-limit state, including when each quota refreshes."""
+        now = time.monotonic()
+        wall = datetime.datetime.now()
+        rows: List[Dict[str, Any]] = []
+        for provider, keys in self._registry:
+            for idx in range(len(keys)):
+                cool_key = f"{provider.name}:{idx}"
+                remaining = max(0.0, self._cooldown_until.get(cool_key, 0.0) - now)
+                refresh_at = (
+                    (wall + datetime.timedelta(seconds=remaining)).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
+                    if remaining > 0
+                    else None
+                )
+                rows.append(
+                    {
+                        "key": cool_key,
+                        "provider": provider.name,
+                        "available": remaining <= 0,
+                        "seconds_until_refresh": round(remaining, 1),
+                        "refresh_at": refresh_at,
+                    }
+                )
+        return rows
+
     def complete(
         self,
         messages: List[ChatMessage],
@@ -174,7 +242,7 @@ class RotatingLLMClient:
                 except LLMError as err:
                     errors.append(f"{provider.name}[key {idx}]: {err}")
                     if err.status == 429:
-                        self._cooldown_until[cool_key] = time.monotonic() + COOLDOWN_S
+                        self._park_key(cool_key, getattr(err, "retry_after", None))
                 except Exception as err:  # defensive: never let one key abort the loop
                     errors.append(f"{provider.name}[key {idx}]: {err}")
 
@@ -227,7 +295,7 @@ class RotatingLLMClient:
                 except LLMError as err:
                     errors.append(f"{provider.name}[key {idx}]: {err}")
                     if err.status == 429:
-                        self._cooldown_until[cool_key] = time.monotonic() + COOLDOWN_S
+                        self._park_key(cool_key, getattr(err, "retry_after", None))
                     continue
                 except Exception as err:  # defensive: try the next key/provider
                     errors.append(f"{provider.name}[key {idx}]: {err}")
@@ -344,7 +412,7 @@ class RotatingLLMClient:
                 except LLMError as err:
                     errors.append(f"{provider.name}[key {idx}]: {err}")
                     if err.status == 429:
-                        self._cooldown_until[cool_key] = time.monotonic() + COOLDOWN_S
+                        self._park_key(cool_key, getattr(err, "retry_after", None))
                 except Exception as err:  # defensive: never let one key abort the loop
                     errors.append(f"{provider.name}[key {idx}]: {err}")
 

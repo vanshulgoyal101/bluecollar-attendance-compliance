@@ -14,6 +14,7 @@ Each provider exposes three surfaces:
   ``tool_calls`` (F-40).
 """
 
+import datetime
 import json
 import re
 from dataclasses import dataclass, field
@@ -76,6 +77,76 @@ def _gemini_usage(data: Dict[str, Any]) -> Dict[str, int]:
     }
 
 
+def _duration_to_seconds(text: Any) -> Optional[float]:
+    """Parse a duration like '35s', '1m30s', '500ms' or '12.5' into seconds."""
+    s = str(text).strip().lower()
+    if not s:
+        return None
+    if s.endswith("ms"):
+        try:
+            return max(0.0, float(s[:-2]) / 1000.0)
+        except ValueError:
+            return None
+    total, matched = 0.0, False
+    for value, unit in re.findall(r"([\d.]+)\s*([hms]?)", s):
+        if not value:
+            continue
+        try:
+            total += float(value) * {"h": 3600, "m": 60, "s": 1, "": 1}[unit]
+            matched = True
+        except ValueError:
+            continue
+    return total if matched else None
+
+
+def retry_after_seconds(res: requests.Response) -> Optional[float]:
+    """Best-effort seconds until a rate-limited key's quota resets.
+
+    Reads the standard ``Retry-After`` header, common vendor reset headers, the
+    Gemini ``RetryInfo.retryDelay`` in the JSON body, and "try again in Xs" text.
+    Returns ``None`` when the response carries no usable hint.
+    """
+    headers = res.headers or {}
+    header_val = headers.get("Retry-After")
+    if header_val:
+        secs = _duration_to_seconds(header_val)
+        if secs is not None:
+            return secs
+        try:
+            from email.utils import parsedate_to_datetime
+
+            dt = parsedate_to_datetime(header_val)
+            return max(0.0, (dt - datetime.datetime.now(dt.tzinfo)).total_seconds())
+        except (TypeError, ValueError):
+            pass
+    for name in ("retry-after-ms", "x-ratelimit-reset-after-ms"):
+        if headers.get(name):
+            try:
+                return max(0.0, float(headers[name]) / 1000.0)
+            except ValueError:
+                pass
+    for name in ("x-ratelimit-reset-tokens", "x-ratelimit-reset-requests"):
+        secs = _duration_to_seconds(headers.get(name, ""))
+        if secs is not None:
+            return secs
+    try:
+        body = res.text or ""
+        data = json.loads(body) if body.strip() else {}
+    except (ValueError, TypeError):
+        body, data = "", {}
+    for detail in (data.get("error") or {}).get("details") or []:
+        if str(detail.get("@type", "")).endswith("RetryInfo") and detail.get(
+            "retryDelay"
+        ):
+            secs = _duration_to_seconds(detail["retryDelay"])
+            if secs is not None:
+                return secs
+    match = re.search(r"try again in\s+([\d.]+)\s*(ms|s|m)?", body, re.I)
+    if match:
+        return _duration_to_seconds(match.group(1) + (match.group(2) or "s"))
+    return None
+
+
 class LLMError(Exception):
     """Raised by a provider on an HTTP/transport failure."""
 
@@ -85,12 +156,15 @@ class LLMError(Exception):
         provider: str,
         status: Optional[int] = None,
         retryable: bool = False,
+        retry_after: Optional[float] = None,
     ):
         # Redact any API key so it never reaches logs, tracebacks or the client.
         super().__init__(_redact_key(message))
         self.provider = provider
         self.status = status
         self.retryable = retryable
+        # Seconds until this key's quota resets, when the provider tells us.
+        self.retry_after = retry_after
 
 
 class GeminiProvider:
@@ -137,6 +211,7 @@ class GeminiProvider:
                 retryable=res.status_code == 429
                 or res.status_code >= 500
                 or res.status_code == 403,
+                retry_after=retry_after_seconds(res),
             )
 
         data = res.json()
@@ -262,8 +337,10 @@ class GeminiProvider:
                 retryable=res.status_code == 429
                 or res.status_code >= 500
                 or res.status_code == 403,
+                retry_after=retry_after_seconds(res),
             )
 
+        res.encoding = "utf-8"  # SSE bodies have no charset; requests would use latin-1
         for line in res.iter_lines(decode_unicode=True):
             if not line or not line.startswith("data:"):
                 continue
@@ -322,6 +399,7 @@ class GeminiProvider:
                 retryable=res.status_code == 429
                 or res.status_code >= 500
                 or res.status_code == 403,
+                retry_after=retry_after_seconds(res),
             )
 
         data = res.json()
@@ -407,6 +485,7 @@ class OpenAICompatibleProvider:
                 retryable=res.status_code == 429
                 or res.status_code >= 500
                 or res.status_code in (401, 403),
+                retry_after=retry_after_seconds(res),
             )
 
         data = res.json()
@@ -505,8 +584,10 @@ class OpenAICompatibleProvider:
                 retryable=res.status_code == 429
                 or res.status_code >= 500
                 or res.status_code in (401, 403),
+                retry_after=retry_after_seconds(res),
             )
 
+        res.encoding = "utf-8"  # SSE bodies have no charset; requests would use latin-1
         for line in res.iter_lines(decode_unicode=True):
             if not line or not line.startswith("data:"):
                 continue
@@ -569,6 +650,7 @@ class OpenAICompatibleProvider:
                 retryable=res.status_code == 429
                 or res.status_code >= 500
                 or res.status_code in (401, 403),
+                retry_after=retry_after_seconds(res),
             )
 
         data = res.json()

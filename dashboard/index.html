@@ -263,20 +263,28 @@ Select an option from the Compliance Action Hub to generate and view the warning
         <strong>Attendance Assistant</strong>
         <span id="chat-status" class="chat-status">Grounded in live attendance data</span>
       </div>
-      <button id="chat-close" class="chat-close" aria-label="Close assistant">&times;</button>
+      <div class="chat-actions">
+        <button id="chat-clear" class="chat-clear" aria-label="New conversation" title="Start a new conversation">+ New</button>
+        <button id="chat-close" class="chat-close" aria-label="Close assistant">&times;</button>
+      </div>
     </div>
     <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
     <div class="chat-suggestions" id="chat-suggestions">
       <button type="button" class="chip">Who is at risk of termination?</button>
-      <button type="button" class="chip">Why was EMP101 excused in May?</button>
       <button type="button" class="chip">Who has the lowest points?</button>
       <button type="button" class="chip">List everyone on a written warning</button>
+      <button type="button" class="chip">Who has an active freeze?</button>
+      <button type="button" class="chip">Why was EMP101 excused in May?</button>
+      <button type="button" class="chip">Compare EMP101 and EMP105</button>
+      <button type="button" class="chip">Which department has the most at-risk staff?</button>
+      <button type="button" class="chip">Summarize the whole roster</button>
     </div>
     <form id="chat-form" class="chat-input">
       <textarea id="chat-text" rows="1" placeholder="Ask about any employee's attendance…" autocomplete="off"></textarea>
       <button type="submit" id="chat-send" aria-label="Send">Send</button>
     </form>
     <div id="chat-usage" class="chat-usage"></div>
+    <div id="chat-cooldown" class="chat-cooldown"></div>
   </div>
 
   <script src="data.js"></script>

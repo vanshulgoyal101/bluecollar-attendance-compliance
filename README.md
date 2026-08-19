@@ -13,6 +13,14 @@ natural-language questions), so compliance decisions stay auditable.
 [Data model](docs/DATA_MODEL.md) · [Features](docs/FEATURES.md) ·
 [Testing](docs/TESTING.md) · [Deployment](docs/DEPLOYMENT.md)
 
+It also ships a **grounded attendance chatbot** (ask natural-language questions about any employee) backed by a **multi-provider, key-rotating LLM client** and a Flask API.
+
+## 📚 Documentation
+
+- [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md) — full architecture, components, data model, engine logic, LLM rotation, chatbot, and API reference.
+- [docs/FEATURES.md](docs/FEATURES.md) — catalog of existing, new, proposed, and future features (with stable IDs).
+- [docs/PARALLEL_WORK_PLAN.md](docs/PARALLEL_WORK_PLAN.md) — 3-worker split with file-ownership boundaries, interface contracts, and ready-to-paste prompts.
+
 ---
 
 ## 📋 The "No-Fault" Attendance Policy Rules

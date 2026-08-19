@@ -8,6 +8,7 @@ question shapes so the feature still works.
 """
 
 import json
+import random
 from typing import Any, Dict, Iterator, List, Optional
 
 from src.chat_store import ChatStore
@@ -305,31 +306,85 @@ class AttendanceChatbot:
     # ------------------------------------------------------------------ #
     # Follow-up suggestions (F-35) + audit logging (F-34)                 #
     # ------------------------------------------------------------------ #
-    def _suggestions(self, question: str) -> List[str]:
-        """2–3 deterministic, context-aware follow-up questions."""
-        mentioned = self.store.find_mentioned(question)
+    def _suggestions(self, question: str, answer: str = "") -> List[str]:
+        """A few varied, context-aware follow-up questions (F-35).
+
+        Anchors on an employee named in the question, then one named in the
+        answer, then the question's intent. Samples from a larger pool so the
+        chips vary between turns instead of repeating the same three.
+        """
+        mentioned = self.store.find_mentioned(question) or self.store.find_mentioned(
+            answer
+        )
         if mentioned:
             emp = mentioned[0]
-            return [
+            pool = [
                 f"What infractions does {emp} have this year?",
                 f"When do {emp}'s points roll back on?",
                 f"Does {emp} have an active freeze?",
+                f"Why is {emp} at that point balance?",
+                f"Has {emp} used any freebies in the last 12 months?",
+                f"Does {emp} have approved FMLA or excused absences?",
+                f"What warnings has {emp} received?",
+                f"How does {emp} compare to their department?",
             ]
+            if len(mentioned) > 1:
+                pool.insert(0, f"Compare {mentioned[0]} and {mentioned[1]}.")
+            return self._pick(pool, 4)
+
         q = question.lower()
         if any(w in q for w in ("lowest", "risk", "termination", "worst", "fire")):
-            return [
+            pool = [
                 "Who is closest to a written warning?",
                 "Show everyone with a termination warning.",
                 "What are the point totals across the whole roster?",
+                "Which department has the most at-risk employees?",
+                "Who has an active freeze right now?",
+                "Who had a no-call-no-show (IANS) this year?",
             ]
-        return [
+            return self._pick(pool, 4)
+        if any(w in q for w in ("department", "team", "compare", "average")):
+            pool = [
+                "Which department has the lowest average points?",
+                "Compare attendance across departments.",
+                "Who are the best and worst performers?",
+                "How many are in good standing per department?",
+            ]
+            return self._pick(pool, 3)
+        if any(w in q for w in ("freeze", "roll", "recover", "expire", "freebie")):
+            pool = [
+                "Who currently has an active freeze?",
+                "Whose points roll back on next?",
+                "Explain how the 4-month freeze works.",
+                "Who used the most freebies this year?",
+            ]
+            return self._pick(pool, 3)
+
+        pool = [
             "Who has the lowest points?",
             "Who is at risk of termination?",
             "Show everyone in good standing.",
+            "Which employees are on a written warning?",
+            "Who has an active freeze period?",
+            "Give me a one-line summary of the whole roster.",
+            "Who used the most freebies this year?",
+            "Which department is doing best on attendance?",
         ]
+        return self._pick(pool, 4)
+
+    @staticmethod
+    def _pick(pool: List[str], n: int) -> List[str]:
+        """Randomly sample up to ``n`` unique items for variety."""
+        return random.sample(pool, min(n, len(pool)))
+
+    def suggestions(self, question: str, answer: str = "") -> List[str]:
+        """Public follow-up suggestions for a question/answer exchange."""
+        return self._suggestions(question, answer)
 
     def _finalize(self, question: str, result: Dict[str, Any]) -> Dict[str, Any]:
-        result.setdefault("suggestions", self._suggestions(question))
+        result.setdefault(
+            "suggestions", self._suggestions(question, result.get("answer", ""))
+        )
         self._maybe_log(question, result)
         return result
 
